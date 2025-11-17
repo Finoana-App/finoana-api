@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/health")
 public class HealthController {
-    @GetMapping("/ping")
-    String ping() {
-        return "pong";
-    }
+  @GetMapping("/ping")
+  String ping() {
+    return "pong";
+  }
 }
