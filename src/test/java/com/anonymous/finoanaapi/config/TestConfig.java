@@ -15,6 +15,7 @@ public class TestConfig {
   @DynamicPropertySource
   static void configureProperties(DynamicPropertyRegistry registry) {
     postgresConfig.configureProperties(registry);
+    registry.add("spring.flyway.locations", () -> "classpath:/db/migration");
   }
 
   @BeforeAll
