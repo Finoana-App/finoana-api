@@ -1,28 +1,34 @@
 package com.anonymous.finoanaapi.models;
 
-import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVE;
+import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVATED;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static org.hibernate.type.SqlTypes.NAMED_ENUM;
 
 import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.anonymous.finoanaapi.models.enums.UserStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "\"user\"")
@@ -43,33 +49,41 @@ public class User {
   @Column(name = "display_name")
   private String displayName;
 
-  @Column private String bio;
+  @EqualsAndHashCode.Exclude @Column private String bio;
 
+  @EqualsAndHashCode.Exclude
   @Column(name = "avatar_url")
   private String avatarUrl;
 
-  @Enumerated(EnumType.STRING)
+  @Enumerated(STRING)
   @Column(nullable = false)
+  @JdbcTypeCode(NAMED_ENUM)
   private UserRole role;
 
-  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  @Enumerated(STRING)
   @Column(nullable = false)
-  private UserStatus status = ACTIVE;
+  @JdbcTypeCode(NAMED_ENUM)
+  private UserStatus status = ACTIVATED;
 
+  @Builder.Default
   @Column(name = "is_anonymous_by_default", nullable = false)
-  private Boolean isAnonymousByDefault;
+  private Boolean isAnonymousByDefault = false;
 
   @Column(name = "email_verified")
   private Boolean emailVerified;
 
   @CreationTimestamp
+  @EqualsAndHashCode.Exclude
   @Column(name = "created_at")
   private Instant createdAt;
 
   @UpdateTimestamp
+  @EqualsAndHashCode.Exclude
   @Column(name = "updated_at")
   private Instant updatedAt;
 
+  @EqualsAndHashCode.Exclude
   @Column(name = "last_login")
   private Instant lastLogin;
 }
