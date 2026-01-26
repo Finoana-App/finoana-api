@@ -1,0 +1,810 @@
+openapi: 3.0.3
+
+info:
+  title: Finoana API
+  version: 1.0.0
+  description: Finoana - Christian Community Platform API
+  contact:
+    name: Fiantso Harena
+    email: harenafiantso@gmail.com
+    url: https://github.com/finoana-app
+  license:
+    name: Apache License 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development Server
+
+tags:
+  - name: Health
+    description: Health check and monitoring endpoints for API status verification
+  - name: Users
+    description: User management, updates, and account operations
+  - name: Administration
+    description: Administrative operations for moderators and admins only
+
+security:
+  - BearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Check API Health
+      description: |
+        Returns the current health status of the API.
+
+        Use this endpoint to:
+        - Monitor API availability
+        - Check server uptime
+        - Verify API version
+      operationId: getHealth
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: API is healthy and operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: ok
+                timestamp: 2024-01-20T15:30:00Z
+                uptime: 86400.5
+                version: 1.0.0
+  /health/ping:
+    get:
+      summary: Ping Server
+      description: |
+        Simple ping endpoint to verify server connectivity.
+
+        Returns immediately with a "pong" response.
+      operationId: ping
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Server is reachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingResponse'
+              example:
+                message: pong
+
+  /users/register:
+    post:
+      summary: Register New User
+      description: Creates a new user account in the Finoana platform.
+      operationId: registerUser
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        description: User registration information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterInput'
+            example:
+              email: jean.rakoto@example.com
+              displayName: Jean Rakoto
+              bio: New member excited to join the community
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+              example:
+                message: User registered successfully
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  email: jean.rakoto@example.com
+                  displayName: Jean Rakoto
+                  photoUrl: null
+                  bio: New member excited to join the community
+                  role: user
+                  privacyLevel: public
+                  isVerified: false
+                  createdAt: 2024-01-20T15:30:00Z
+                  lastSeenAt: null
+        '400':
+          description: Registration failed due to validation error or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                userExists:
+                  summary: User already registered
+                  value:
+                    error: User already registered
+                validationError:
+                  summary: Validation error
+                  value:
+                    error: Validation failed
+                    details:
+                      - field: displayName
+                        message: Display name must be at least 2 characters
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /users/me:
+    get:
+      summary: Get Current User Profile
+      description: Retrieves the authenticated user's complete profile information.
+      operationId: getCurrentUser
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  email: jean.rakoto@example.com
+                  displayName: Jean Rakoto
+                  photoUrl: https://storage.finoana.com/users/550e8400.jpg
+                  bio: God First
+                  role: user
+                  privacyLevel: public
+                  isVerified: true
+                  createdAt: 2024-01-15T10:30:00Z
+                  lastSeenAt: 2024-01-20T14:45:30Z
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update Current User Profile
+      description: Updates the authenticated user's profile information.
+      operationId: updateCurrentUser
+      tags:
+        - Users
+      requestBody:
+        required: true
+        description: Fields to update (all optional)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileInput'
+            example:
+              displayName: Jean Pierre Rakoto
+              bio: Updated bio with more information
+              privacyLevel: private
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+              example:
+                message: Profile updated successfully
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  email: jean.rakoto@example.com
+                  displayName: Jean Pierre Rakoto
+                  bio: Updated bio with more information
+                  privacyLevel: private
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      summary: Deactivate Current User Account
+      description: Deactivates the authenticated user's account.
+      operationId: deactivateCurrentUser
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Account deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                message: Account deactivated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /users/search:
+    get:
+      summary: Search Users
+      description: Search for users by display name or email address.
+      operationId: searchUsers
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchUsersResponse'
+              example:
+                users:
+                  - id: 550e8400-e29b-41d4-a716-446655440000
+                    displayName: Jean Rakoto
+                    photoUrl: https://storage.finoana.com/users/550e8400.jpg
+                    bio: Follower of Christ
+                  - id: 660e8400-e29b-41d4-a716-446655440001
+                    displayName: Jean Pierre
+                    photoUrl: null
+                    bio: Prayer warrior
+                count: 2
+        '400':
+          description: Missing or invalid search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Search query is required
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /users/{id}:
+    get:
+      summary: Get User by ID
+      description: Retrieves a user's profile by their UUID.
+      operationId: getUserById
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  displayName: Jean Rakoto
+                  photoUrl: https://storage.finoana.com/users/550e8400.jpg
+                  bio: Follower of Christ
+                  privacyLevel: public
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /users:
+    get:
+      summary: List All Users
+      description: Retrieves a paginated list of all users in the system.
+      operationId: listAllUsers
+      tags:
+        - Administration
+      parameters:
+        - $ref: '#/components/parameters/pageNumber'
+        - $ref: '#/components/parameters/pageLimit'
+      responses:
+        '200':
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersListResponse'
+              example:
+                users:
+                  - id: 550e8400-e29b-41d4-a716-446655440000
+                    email: user1@example.com
+                    displayName: User One
+                    role: user
+                    isVerified: true
+                  - id: 660e8400-e29b-41d4-a716-446655440001
+                    email: user2@example.com
+                    displayName: User Two
+                    role: moderator
+                    isVerified: true
+                page: 1
+                limit: 20
+                total: 150
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /users/{id}/role:
+    put:
+      summary: Update User Role
+      description: Updates a user's role in the system.
+      operationId: updateUserRole
+      tags:
+        - Administration
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      requestBody:
+        required: true
+        description: New role to assign
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRoleInput'
+            example:
+              role: moderator
+      responses:
+        '200':
+          description: User role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+              example:
+                message: User role updated successfully
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  email: user@example.com
+                  displayName: User Name
+                  role: moderator
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /users/{id}/ban:
+    post:
+      summary: Ban User
+      description: Bans a user from the platform.
+      operationId: banUser
+      tags:
+        - Administration
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: User banned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                message: User banned successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /users/{id}/unban:
+    post:
+      summary: Unban User
+      description: Removes ban and reactivates a user's account.
+      operationId: unbanUser
+      tags:
+        - Administration
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: User unbanned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                message: User unbanned successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Firebase ID Token obtained from Firebase Authentication.
+
+        **How to get token:**
+        1. Authenticate with Firebase Client SDK
+        2. Call `getIdToken()` on authenticated user
+        3. Include in Authorization header
+
+  schemas:
+    User:
+      type: object
+      description: User profile information
+      required:
+        - id
+        - email
+        - displayName
+        - role
+        - privacyLevel
+        - isVerified
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique user identifier
+          example: 550e8400-e29b-41d4-a716-446655440000
+
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: jean.rakoto@example.com
+
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: User's display name shown to other users
+          example: Jean Rakoto
+
+        photoUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: URL to user's profile photo
+          example: https://storage.finoana.com/users/550e8400.jpg
+
+        bio:
+          type: string
+          maxLength: 500
+          nullable: true
+          description: User's biography or personal description
+          example: Follower of Christ, passionate about community and prayer
+
+        role:
+          type: string
+          enum: [user, moderator, admin]
+          description: |
+            User's role in the platform:
+            - `user` - Regular community member
+            - `moderator` - Can moderate content and ban users
+            - `admin` - Full administrative access
+          example: user
+
+        privacyLevel:
+          type: string
+          enum: [public, private, anonymous]
+          description: |
+            User's privacy settings:
+            - `public` - Profile visible to all users
+            - `private` - Profile visible only to connections
+            - `anonymous` - Profile hidden, only display name shown
+          example: public
+
+        isVerified:
+          type: boolean
+          description: Whether the user has verified their email address
+          example: true
+
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+          example: 2024-01-15T10:30:00Z
+
+        lastSeenAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Last activity timestamp
+          example: 2024-01-20T14:45:30Z
+    RegisterInput:
+      type: object
+      description: User registration data
+      required:
+        - email
+        - displayName
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address (must match Firebase auth email)
+          example: jean.rakoto@example.com
+
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Desired display name
+          example: Jean Rakoto
+
+        photoUrl:
+          type: string
+          format: uri
+          description: Optional profile photo URL
+          example: https://example.com/photo.jpg
+
+        bio:
+          type: string
+          maxLength: 500
+          description: Optional user biography
+          example: New member of the Finoana community, excited to connect with fellow believers
+    UpdateProfileInput:
+      type: object
+      description: User profile update data
+      properties:
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Updated display name
+          example: Jean Pierre Rakoto
+
+        photoUrl:
+          type: string
+          format: uri
+          description: Updated profile photo URL
+          example: https://storage.finoana.com/new-photo.jpg
+
+        bio:
+          type: string
+          maxLength: 500
+          description: Updated biography
+          example: Passionate about faith, family, and community service
+
+        privacyLevel:
+          type: string
+          enum: [public, private, anonymous]
+          description: Updated privacy level
+          example: private
+    UpdateRoleInput:
+      type: object
+      description: Role update data (admin only)
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum: [user, moderator, admin]
+          description: New role to assign to the user
+          example: moderator
+    SuccessResponse:
+      type: object
+      description: Generic success response
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: Operation completed successfully
+    UserResponse:
+      type: object
+      description: Single user response
+      required:
+        - user
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+    UsersListResponse:
+      type: object
+      description: Paginated list of users
+      required:
+        - users
+        - page
+        - limit
+        - total
+      properties:
+        users:
+          type: array
+          description: Array of user objects
+          items:
+            $ref: '#/components/schemas/User'
+
+        page:
+          type: integer
+          minimum: 1
+          description: Current page number
+          example: 1
+
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Number of items per page
+          example: 20
+
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of users
+          example: 150
+    SearchUsersResponse:
+      type: object
+      description: User search results
+      required:
+        - users
+        - count
+      properties:
+        users:
+          type: array
+          description: Array of matching users
+          items:
+            $ref: '#/components/schemas/User'
+
+        count:
+          type: integer
+          description: Number of results returned
+          example: 5
+    Error:
+      type: object
+      description: Error response
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: Invalid request parameters
+
+        details:
+          type: array
+          description: Detailed validation errors (when applicable)
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Field name that failed validation
+                example: email
+              message:
+                type: string
+                description: Validation error message
+                example: Invalid email format
+    HealthResponse:
+      type: object
+      description: API health status
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded, down]
+          description: Current API status
+          example: ok
+
+        timestamp:
+          type: string
+          format: date-time
+          description: Current server timestamp
+          example: 2024-01-20T15:30:00Z
+
+        uptime:
+          type: number
+          format: float
+          description: Server uptime in seconds
+          example: 86400.5
+
+        version:
+          type: string
+          description: API version
+          example: 1.0.0
+    PingResponse:
+      type: object
+      description: Simple ping response
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          enum: [pong]
+          example: pong
+
+  parameters:
+    userId:
+      name: id
+      in: path
+      required: true
+      description: User UUID
+      schema:
+        type: string
+        format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+    pageNumber:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      example: 1
+    pageLimit:
+      name: limit
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      example: 20
+    searchQuery:
+      name: q
+      in: query
+      required: true
+      description: Search query string
+      schema:
+        type: string
+        minLength: 1
+      example: jean
+
+  responses:
+    Unauthorized:
+      description: Authentication required or token invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Invalid or expired authentication token
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Insufficient permissions to perform this action
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: User not found
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Validation failed
+            details:
+              - field: email
+                message: Invalid email format
+              - field: displayName
+                message: Display name must be at least 2 characters
