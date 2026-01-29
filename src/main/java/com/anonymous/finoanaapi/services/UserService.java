@@ -18,4 +18,10 @@ public class UserService {
   public List<User> saveAll(List<User> users) {
     return userRepository.saveAll(users);
   }
+
+  public User getByEmail(String email) {
+    return userRepository
+        .findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User with email %s not fount".formatted(email)));
+  }
 }
