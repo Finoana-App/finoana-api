@@ -48,29 +48,12 @@ public class FirebaseFilter extends OncePerRequestFilter {
     return headerValue.substring(BEARER_PREFIX.length());
   }
 
-  private void authUser(HttpServletRequest request) {
-    try {
-      var token = getBearer(request);
-      var firebaseInfo = verifyIdToken(token);
-      var principal = firebaseUserToPrincipalMapper.apply(firebaseInfo);
-      setPrincipal(principal);
-      // TODO: better exception handing for http compatibility
-    } catch (FirebaseAuthException e) {
-      log.warn("User not authenticated, %s".formatted(e));
-    } catch (BearerNotFound e) {
-      log.warn("Bearer not found in %s".formatted(request.getHeader(AUTHORIZATION_HEADER)));
-    } catch (AuthorizationHeaderNotFound e) {
-      log.warn(e.getMessage());
-    }
-  }
-
-  @Override
-  protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
-    authUser(request);
-
-    filterChain.doFilter(request, response);
+  private void authUser(HttpServletRequest request)
+      throws BearerNotFound, AuthorizationHeaderNotFound, FirebaseAuthException {
+    var token = getBearer(request);
+    var firebaseInfo = verifyIdToken(token);
+    var principal = firebaseUserToPrincipalMapper.apply(firebaseInfo);
+    setPrincipal(principal);
   }
 
   private static void setPrincipal(Principal principal) {
@@ -91,5 +74,49 @@ public class FirebaseFilter extends OncePerRequestFilter {
     }
 
     return (Principal) rawPrincipal;
+  }
+
+  private static void filterExceptionToHttpException(
+      Exception exception, HttpServletResponse response) {
+    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    response.setContentType("application/json");
+    try {
+      response
+          .getWriter()
+          .write(
+              """
+              {
+                "error": %s
+              }
+              """
+                  .formatted(exception));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    try {
+      authUser(request);
+    } catch (AuthorizationHeaderNotFound e) {
+      log.warn(e.getMessage());
+      /**
+       * TODO: after ignoring request that doesn't required auth, add mapper here request without
+       * authorization must raise exception
+       */
+    } catch (BearerNotFound e) {
+      log.warn("Bearer not found in %s".formatted(request.getHeader(AUTHORIZATION_HEADER)));
+      filterExceptionToHttpException(e, response);
+      return;
+    } catch (FirebaseAuthException e) {
+      log.warn("User not authenticated, %s".formatted(e));
+      filterExceptionToHttpException(e, response);
+      return;
+    }
+
+    filterChain.doFilter(request, response);
   }
 }
