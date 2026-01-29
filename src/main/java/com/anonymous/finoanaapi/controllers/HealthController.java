@@ -11,4 +11,9 @@ public class HealthController {
   String ping() {
     return "pong";
   }
+
+  @GetMapping("/secured/ping")
+  String securedPing() {
+    return "pong";
+  }
 }
