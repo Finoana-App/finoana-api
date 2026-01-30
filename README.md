@@ -30,15 +30,6 @@ cd finoana-api
 
 - Copy the `.env.example` to `.env`
 - Modify the content of the `.env`
-```dotenv
-DB_URL=jdbc:postgresql://host:port/postgres_database_name
-DB_USERNAME=postgres_username
-DB_PASSWORD=postgres_password
-CASDOOR_CERTIFICATE="-----BEGIN CERTIFICATE-----
-example
------END CERTIFICATE-----"
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/google-services.json
-```
 
 ### Run
 // TODO: the following run script doesn't work
