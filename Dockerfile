@@ -5,7 +5,11 @@ WORKDIR /app
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
+COPY doc ./doc
+COPY .shell ./.shell
 RUN chmod +x gradlew
+RUN ./gradlew openApiGenerate --no-daemon
+RUN ./gradlew publishGeneratedToMavenLocal --no-daemon
 RUN ./gradlew dependencies --no-daemon
 
 COPY src src

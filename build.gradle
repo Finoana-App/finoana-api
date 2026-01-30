@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.7'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.openapi.generator' version '7.12.0'
 }
 
 group = 'com.anonymous'
@@ -9,12 +10,15 @@ version = '0.0.1-SNAPSHOT'
 description = 'finoana-api'
 
 java {
+    group = 'com.anonymous.finoanaapi'
+
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -30,6 +34,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'net.datafaker:datafaker:2.5.2'
+    implementation 'com.anonymous:finoanaapi:0.1.0'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -47,3 +52,39 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+openApiGenerate {
+    generatorName = "java"
+    inputSpec = "$rootDir/doc/api.yml".toString()
+    outputDir = "$buildDir/generated".toString()
+    apiPackage = "com.anonymous.finoanaapi.controllers.api"
+    invokerPackage = "com.anonymous.finoanaapi.controllers.client"
+    modelPackage = "com.anonymous.finoanaapi.controllers.model"
+
+    configOptions = [
+            serializableModel: "true",
+            serializationLibrary: "jackson",
+            dateLibrary: "custom"
+    ]
+    typeMappings = [
+            Date: "java.time.LocalDate",
+            DateTime: "java.time.Instant",
+    ]
+    library = "native"
+
+    groupId = 'com.anonymous'
+    id = 'finoanaapi'
+    skipValidateSpec = false
+    logToStderr = true
+    generateAliasAsModel = false
+    enablePostProcessFile = false
+    version = "0.1.0"
+}
+
+tasks.register('publishGeneratedToMavenLocal', Exec) {
+    group = "publishing"
+    description = "Publish generated artifacts to Maven Local"
+
+    commandLine "${projectDir}/.shell/publish_gen_to_maven_local.sh"
+}
+tasks.compileJava.dependsOn publishGeneratedToMavenLocal

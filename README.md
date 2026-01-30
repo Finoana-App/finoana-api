@@ -46,3 +46,12 @@ set +a
 
 * Java **21** is **required** because the API uses the Gradle toolchain defined at `JavaLanguageVersion.of(21)`.
 * Using SDKMAN or jEnv is recommended to manage multiple Java versions on your system.
+
+## ♨ Development
+### After a modification in the doc/api.yml *or* when running the project for the first time
+```bash
+./gradlew clean
+./gradlew openApiGenerate
+./gradlew publishGeneratedToMavenLocal
+./gradlew build
+```
