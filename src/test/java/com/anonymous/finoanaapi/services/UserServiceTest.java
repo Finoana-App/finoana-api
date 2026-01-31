@@ -10,11 +10,9 @@ import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@SpringBootTest
 class UserServiceTest extends TestConfig {
   @Autowired private UserService subject;
   private static final Faker faker = new Faker();

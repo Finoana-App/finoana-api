@@ -1,26 +1,27 @@
 package com.anonymous.finoanaapi.IT;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.anonymous.finoanaapi.controllers.model.PingResponse.MessageEnum.PONG;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.anonymous.finoanaapi.config.TestConfig;
+import com.anonymous.finoanaapi.controllers.api.HealthApi;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class HealthControllerIT extends TestConfig {
-  @Autowired private MockMvc mockMvc;
 
   @Test
-  void ping() throws Exception {
-    mockMvc
-        .perform(get("/health/ping"))
-        .andExpect(status().isOk())
-        .andExpect(content().string("pong"));
+  void ping_ok() throws Exception {
+    var api = new HealthApi(anApiClient());
+    var result = api.ping();
+    assertEquals(PONG, result.getMessage());
+  }
+
+  @Test
+  @Disabled
+  void secured_ping_ko() throws Exception {
+    var api = new HealthApi(anApiClient());
+    var result = api.ping();
+    assertEquals(PONG, result.getMessage());
   }
 }

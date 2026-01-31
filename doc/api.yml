@@ -12,10 +12,6 @@ info:
     name: Apache License 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
 
-servers:
-  - url: http://localhost:3000/api/v1
-    description: Development Server
-
 tags:
   - name: Health
     description: Health check and monitoring endpoints for API status verification
