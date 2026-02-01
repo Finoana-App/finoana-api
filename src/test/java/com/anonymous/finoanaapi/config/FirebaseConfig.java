@@ -31,7 +31,6 @@ public class FirebaseConfig {
     mockFirebaseAuthInstance = mock();
     mockFirebaseAuth = mockStatic(FirebaseAuth.class);
     mockFirebaseAuth.when(FirebaseAuth::getInstance).thenReturn(mockFirebaseAuthInstance);
-    setupFirebaseAuthUser("dummy", "dummy@gmail.com", "dummy", "dummy");
   }
 
   /**
