@@ -6,6 +6,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import com.anonymous.finoanaapi.controllers.client.ApiClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -16,6 +17,7 @@ import org.springframework.test.context.DynamicPropertySource;
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class TestConfig {
   @LocalServerPort private int localPort;
+  @Autowired protected UserRegistration userRegistration;
   private static final PostgresConfig postgresConfig = new PostgresConfig();
 
   @DynamicPropertySource

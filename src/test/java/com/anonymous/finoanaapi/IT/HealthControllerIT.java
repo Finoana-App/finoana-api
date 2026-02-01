@@ -1,15 +1,16 @@
 package com.anonymous.finoanaapi.IT;
 
+import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsForbiddenException;
 import static com.anonymous.finoanaapi.controllers.model.PingResponse.MessageEnum.PONG;
+import static com.anonymous.finoanaapi.models.enums.UserRole.COMMON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.anonymous.finoanaapi.config.TestConfig;
 import com.anonymous.finoanaapi.controllers.api.HealthApi;
-import org.junit.jupiter.api.Disabled;
+import com.anonymous.finoanaapi.models.User;
 import org.junit.jupiter.api.Test;
 
 class HealthControllerIT extends TestConfig {
-
   @Test
   void ping_ok() throws Exception {
     var api = new HealthApi(anApiClient());
@@ -18,10 +19,29 @@ class HealthControllerIT extends TestConfig {
   }
 
   @Test
-  @Disabled
-  void secured_ping_ko() throws Exception {
+  void secured_ping_ko() {
     var api = new HealthApi(anApiClient());
-    var result = api.ping();
+    assertThrowsForbiddenException(api::securedPing);
+  }
+
+  @Test
+  void secured_ping_ok() throws Exception {
+    var token = "USER";
+    userRegistration.registerWithFirebase(someUser(), token);
+    var api = new HealthApi(anApiClient(token));
+
+    var result = api.securedPing();
     assertEquals(PONG, result.getMessage());
+  }
+
+  private static User someUser() {
+    return User.builder()
+        .email("test@gmail.com")
+        .firstName("test")
+        .lastName("test")
+        .avatarUrl("url")
+        .role(COMMON)
+        .displayName("test")
+        .build();
   }
 }

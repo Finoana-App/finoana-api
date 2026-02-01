@@ -70,6 +70,26 @@ paths:
                 $ref: '#/components/schemas/PingResponse'
               example:
                 message: pong
+  /health/secured/ping:
+    get:
+      summary: Ping Server
+      description: |
+        Simple ping endpoint to verify server connectivity and the authentification filter.
+
+        Returns immediately with a "pong" response.
+      operationId: securedPing
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Server is reachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingResponse'
+              example:
+                message: pong
 
   /users/register:
     post:

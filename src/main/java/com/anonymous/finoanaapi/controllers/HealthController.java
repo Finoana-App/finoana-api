@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
   @GetMapping("/ping")
   PingResponse ping() {
+    return pongResponse();
+  }
+
+  private static PingResponse pongResponse() {
     return new PingResponse().message(PONG);
   }
 
   @GetMapping("/secured/ping")
-  String securedPing() {
-    return "pong";
+  PingResponse securedPing() {
+    return pongResponse();
   }
 }
