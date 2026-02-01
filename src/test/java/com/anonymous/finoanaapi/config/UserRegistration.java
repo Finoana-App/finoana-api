@@ -4,10 +4,13 @@ import static com.anonymous.finoanaapi.config.FirebaseConfig.setupFirebaseAuthUs
 
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.repositories.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class UserRegistration {
@@ -19,6 +22,7 @@ public class UserRegistration {
 
   public User registerWithFirebase(User user, String token) throws FirebaseAuthException {
     setupFirebaseAuthUser(token, user.getEmail(), "name", user.getAvatarUrl());
+    log.info(token + " => " + FirebaseAuth.getInstance().verifyIdToken(token).getEmail());
     return register(user);
   }
 }
