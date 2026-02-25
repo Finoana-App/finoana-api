@@ -1,6 +1,6 @@
 package com.anonymous.finoanaapi.config;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -13,10 +13,10 @@ import java.util.List;
 import org.mockito.MockedStatic;
 
 public class FirebaseConfig {
-  private static MockedStatic<FirebaseAuth> mockFirebaseAuth;
-  private static MockedStatic<FirebaseApp> mockFirebaseApp;
-  private static FirebaseAuth mockFirebaseAuthInstance;
-  private static List<FirebaseApp> mockFirebaseAppInstances;
+  private static MockedStatic<FirebaseAuth> mockFirebaseAuth = mockStatic(FirebaseAuth.class);
+  private static MockedStatic<FirebaseApp> mockFirebaseApp = mockStatic(FirebaseApp.class);
+  private static FirebaseAuth mockFirebaseAuthInstance = mock();
+  private static List<FirebaseApp> mockFirebaseAppInstances = mock();
 
   static void setup() {
     try {
@@ -28,8 +28,6 @@ public class FirebaseConfig {
   }
 
   private static void setupFirebaseAuth() throws FirebaseAuthException {
-    mockFirebaseAuthInstance = mock();
-    mockFirebaseAuth = mockStatic(FirebaseAuth.class);
     mockFirebaseAuth.when(FirebaseAuth::getInstance).thenReturn(mockFirebaseAuthInstance);
   }
 
@@ -40,25 +38,16 @@ public class FirebaseConfig {
   public static void setupFirebaseAuthUser(
       String idToken, String email, String name, String picture) throws FirebaseAuthException {
     var mockFirebaseToken = mock(FirebaseToken.class);
-    // TODO: compare by using the contains, but doesn't work for some reasons
-    // when(mockFirebaseAuthInstance.verifyIdToken(contains(idToken))).thenReturn(mockFirebaseToken);
-    when(mockFirebaseAuthInstance.verifyIdToken(anyString())).thenReturn(mockFirebaseToken);
+    when(mockFirebaseAuthInstance.verifyIdToken(contains(idToken))).thenReturn(mockFirebaseToken);
     when(mockFirebaseToken.getEmail()).thenReturn(email);
     when(mockFirebaseToken.getName()).thenReturn(name);
     when(mockFirebaseToken.getPicture()).thenReturn(picture);
   }
 
   private static void setupFirebaseApp() {
-    mockFirebaseApp = mockStatic(FirebaseApp.class);
-    mockFirebaseAppInstances = mock();
     mockFirebaseApp.when(FirebaseApp::getApps).thenReturn(mockFirebaseAppInstances);
     // Mock the app is registered
     // TODO: must be modified to mock all of the firebase setup
     when(mockFirebaseAppInstances.isEmpty()).thenReturn(false);
-  }
-
-  static void setDown() {
-    mockFirebaseAuth.close();
-    mockFirebaseApp.close();
   }
 }

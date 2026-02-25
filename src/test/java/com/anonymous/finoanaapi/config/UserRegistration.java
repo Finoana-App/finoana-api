@@ -22,7 +22,10 @@ public class UserRegistration {
 
   public User registerWithFirebase(User user, String token) throws FirebaseAuthException {
     setupFirebaseAuthUser(token, user.getEmail(), "name", user.getAvatarUrl());
-    log.info(token + " => " + FirebaseAuth.getInstance().verifyIdToken(token).getEmail());
+    var registrationLog =
+        "Mock token-email auth: %s => %s"
+            .formatted(token, FirebaseAuth.getInstance().verifyIdToken(token).getEmail());
+    log.info(registrationLog);
     return register(user);
   }
 }

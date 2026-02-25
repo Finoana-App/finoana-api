@@ -2,12 +2,11 @@ package com.anonymous.finoanaapi.IT;
 
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsForbiddenException;
 import static com.anonymous.finoanaapi.controllers.model.PingResponse.MessageEnum.PONG;
-import static com.anonymous.finoanaapi.models.enums.UserRole.COMMON;
+import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.anonymous.finoanaapi.config.TestConfig;
 import com.anonymous.finoanaapi.controllers.api.HealthApi;
-import com.anonymous.finoanaapi.models.User;
 import org.junit.jupiter.api.Test;
 
 class HealthControllerIT extends TestConfig {
@@ -32,16 +31,5 @@ class HealthControllerIT extends TestConfig {
 
     var result = api.securedPing();
     assertEquals(PONG, result.getMessage());
-  }
-
-  private static User someUser() {
-    return User.builder()
-        .email("test@gmail.com")
-        .firstName("test")
-        .lastName("test")
-        .avatarUrl("url")
-        .role(COMMON)
-        .displayName("test")
-        .build();
   }
 }

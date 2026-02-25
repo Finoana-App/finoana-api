@@ -4,7 +4,6 @@ import static java.lang.Runtime.getRuntime;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.anonymous.finoanaapi.controllers.client.ApiClient;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,11 +30,6 @@ public class TestConfig {
     postgresConfig.start();
     getRuntime().addShutdownHook(new Thread(postgresConfig::stop));
     FirebaseConfig.setup();
-  }
-
-  @AfterAll
-  static void setDown() {
-    FirebaseConfig.setDown();
   }
 
   protected ApiClient anApiClient(String token) {
