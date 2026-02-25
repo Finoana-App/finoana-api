@@ -1,7 +1,9 @@
 package com.anonymous.finoanaapi.utils.security;
 
+import com.anonymous.finoanaapi.controllers.exceptions.ForbiddenException;
 import com.anonymous.finoanaapi.utils.security.firebase.FirebaseFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Slf4j
 @Configuration
@@ -16,9 +19,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConf {
   public static final String AUTHORIZATION_HEADER = "Authorization";
   private final FirebaseFilter firebaseFilter;
+  private final HandlerExceptionResolver exceptionResolver;
 
-  SecurityConf(FirebaseFilter firebaseFilter) {
+  SecurityConf(
+      FirebaseFilter firebaseFilter,
+      @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
     this.firebaseFilter = firebaseFilter;
+    this.exceptionResolver = exceptionResolver;
   }
 
   @Bean
@@ -42,6 +49,20 @@ public class SecurityConf {
 
     // TODO: don't make not necessary request passthrough this
     http.addFilterBefore(firebaseFilter, UsernamePasswordAuthenticationFilter.class);
+
+    http.exceptionHandling(
+        handler ->
+            handler
+                .accessDeniedHandler(
+                    ((request, response, accessDeniedException) -> {
+                      exceptionResolver.resolveException(
+                          request, response, null, new ForbiddenException("Forbidden"));
+                    }))
+                .authenticationEntryPoint(
+                    ((request, response, accessDeniedException) -> {
+                      exceptionResolver.resolveException(
+                          request, response, null, new ForbiddenException("Forbidden"));
+                    })));
 
     return http.build();
   }

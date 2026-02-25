@@ -8,15 +8,11 @@ import com.anonymous.finoanaapi.config.TestConfig;
 import com.anonymous.finoanaapi.models.User;
 import java.util.List;
 import net.datafaker.Faker;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@SpringBootTest
-@Disabled
 class UserServiceTest extends TestConfig {
   @Autowired private UserService subject;
   private static final Faker faker = new Faker();

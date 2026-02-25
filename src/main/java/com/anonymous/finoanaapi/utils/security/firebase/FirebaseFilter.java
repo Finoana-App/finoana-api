@@ -1,7 +1,6 @@
 package com.anonymous.finoanaapi.utils.security.firebase;
 
 import static com.anonymous.finoanaapi.utils.security.SecurityConf.AUTHORIZATION_HEADER;
-import static com.anonymous.finoanaapi.utils.security.firebase.FirebaseInitialisation.verifyIdToken;
 
 import com.anonymous.finoanaapi.models.Principal;
 import com.anonymous.finoanaapi.utils.exceptions.AuthorizationHeaderNotFound;
@@ -25,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class FirebaseFilter extends OncePerRequestFilter {
   public static final String BEARER_PREFIX = "Bearer ";
   private final FirebaseUserToPrincipalMapper firebaseUserToPrincipalMapper;
+  private final FirebaseTokenVerification tokenVerification;
 
   private static String getAuthHeader(HttpServletRequest request)
       throws AuthorizationHeaderNotFound {
@@ -51,7 +51,7 @@ public class FirebaseFilter extends OncePerRequestFilter {
   private void authUser(HttpServletRequest request)
       throws BearerNotFound, AuthorizationHeaderNotFound, FirebaseAuthException {
     var token = getBearer(request);
-    var firebaseInfo = verifyIdToken(token);
+    var firebaseInfo = tokenVerification.verifyIdToken(token);
     var principal = firebaseUserToPrincipalMapper.apply(firebaseInfo);
     setPrincipal(principal);
   }
