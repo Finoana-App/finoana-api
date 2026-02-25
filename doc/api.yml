@@ -293,7 +293,7 @@ paths:
   /users/{id}:
     get:
       summary: Get User by ID
-      description: Retrieves a user's profile by their UUID.
+      description: Retrieves a user's profile by their ID.
       operationId: getUserById
       tags:
         - Users
@@ -476,7 +476,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           description: Unique user identifier
           example: 550e8400-e29b-41d4-a716-446655440000
 
@@ -495,15 +494,11 @@ components:
 
         photoUrl:
           type: string
-          format: uri
-          nullable: true
           description: URL to user's profile photo
           example: https://storage.finoana.com/users/550e8400.jpg
 
         bio:
           type: string
-          maxLength: 500
-          nullable: true
           description: User's biography or personal description
           example: Follower of Christ, passionate about community and prayer
 
@@ -541,7 +536,6 @@ components:
         lastSeenAt:
           type: string
           format: date-time
-          nullable: true
           description: Last activity timestamp
           example: 2024-01-20T14:45:30Z
     RegisterInput:
@@ -566,13 +560,11 @@ components:
 
         photoUrl:
           type: string
-          format: uri
           description: Optional profile photo URL
           example: https://example.com/photo.jpg
 
         bio:
           type: string
-          maxLength: 500
           description: Optional user biography
           example: New member of the Finoana community, excited to connect with fellow believers
     UpdateProfileInput:
@@ -588,13 +580,11 @@ components:
 
         photoUrl:
           type: string
-          format: uri
           description: Updated profile photo URL
           example: https://storage.finoana.com/new-photo.jpg
 
         bio:
           type: string
-          maxLength: 500
           description: Updated biography
           example: Passionate about faith, family, and community service
 
@@ -752,10 +742,9 @@ components:
       name: id
       in: path
       required: true
-      description: User UUID
+      description: User ID
       schema:
         type: string
-        format: uuid
       example: 550e8400-e29b-41d4-a716-446655440000
     pageNumber:
       name: page

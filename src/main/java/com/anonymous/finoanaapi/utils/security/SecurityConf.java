@@ -38,6 +38,8 @@ public class SecurityConf {
                 .anonymous()
                 .requestMatchers("/health/secured/ping")
                 .authenticated()
+                .requestMatchers("/users/me")
+                .authenticated()
                 .anyRequest()
                 .denyAll());
 
