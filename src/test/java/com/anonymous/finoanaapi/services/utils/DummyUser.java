@@ -3,8 +3,6 @@ package com.anonymous.finoanaapi.services.utils;
 import static com.anonymous.finoanaapi.models.enums.UserRole.COMMON;
 
 import com.anonymous.finoanaapi.models.User;
-import java.util.List;
-import java.util.stream.IntStream;
 import net.datafaker.Faker;
 
 public class DummyUser {
@@ -19,9 +17,5 @@ public class DummyUser {
         .bio(faker.lorem().paragraph())
         .role(COMMON)
         .build();
-  }
-
-  public static List<User> someCommonUsers(int count) {
-    return IntStream.of(count).mapToObj(i -> someCommonUser()).toList();
   }
 }

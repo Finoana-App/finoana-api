@@ -7,6 +7,8 @@ import com.anonymous.finoanaapi.models.User;
 import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,15 +18,14 @@ import org.springframework.stereotype.Service;
 public class UserDao {
   private final EntityManager entityManager;
 
-  // TODO: create a criteria for more clean code
-  public Page<User> findByCriteria(String name, Pageable pageable) {
+  public Page<User> findByCriteria(@NonNull Criteria criteria, Pageable pageable) {
     var dao = new PagedWrapperDao<>(entityManager, User.class);
 
     dao.addPredicate(
         (r, c) -> {
-          if (name == null) return Optional.empty();
+          if (criteria.name == null) return Optional.empty();
 
-          var namePattern = "%" + name.toLowerCase() + "%";
+          var namePattern = "%" + criteria.name.toLowerCase() + "%";
 
           var firstnamePredicate = c.like(c.lower(r.get(FIRST_NAME_ATTRIBUTE)), namePattern);
           var lastnamePredicate = c.like(c.lower(r.get(LAST_NAME_ATTRIBUTE)), namePattern);
@@ -34,4 +35,7 @@ public class UserDao {
 
     return dao.retrieve(pageable);
   }
+
+  @Builder
+  public record Criteria(String name) {}
 }

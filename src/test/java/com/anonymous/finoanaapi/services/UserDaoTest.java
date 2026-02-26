@@ -7,6 +7,7 @@ import com.anonymous.finoanaapi.config.TestConfig;
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.repositories.UserRepository;
 import com.anonymous.finoanaapi.repositories.dao.UserDao;
+import com.anonymous.finoanaapi.repositories.dao.UserDao.Criteria;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,9 @@ class UserDaoTest extends TestConfig {
         userRepository.saveAll(
             List.of(userWithCommonName, userWithStrangeLastName, userWithStrangeFirstName));
 
-    var noFilter = subject.findByCriteria(null, Pageable.ofSize(10));
-    var filterByName = subject.findByCriteria("strange", Pageable.ofSize(10));
+    var noFilter = subject.findByCriteria(Criteria.builder().build(), Pageable.ofSize(10));
+    var filterByName =
+        subject.findByCriteria(Criteria.builder().name("strange").build(), Pageable.ofSize(10));
 
     assertTrue(noFilter.getContent().containsAll(users));
     assertTrue(filterByName.getContent().contains(userWithStrangeFirstName));
