@@ -23,7 +23,8 @@ class UserDaoTest extends TestConfig {
     var userWithCommonName = userWithCommonName();
     var userWithStrangeFirstName = userWithStrangeFirstName();
     var userWithStrangeLastName = userWithStrangeLastName();
-      var users = userRepository.saveAll(
+    var users =
+        userRepository.saveAll(
             List.of(userWithCommonName, userWithStrangeLastName, userWithStrangeFirstName));
 
     var noFilter = subject.findByCriteria(null, Pageable.ofSize(10));

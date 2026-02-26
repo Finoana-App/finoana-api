@@ -13,7 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-public class PagedCriteriaBuilder<T> {
+public class PagedWrapperDao<T> {
   private final EntityManager entityManager;
   private final CriteriaBuilder criteriaBuilder;
   private final CriteriaQuery<T> query;
@@ -23,7 +23,7 @@ public class PagedCriteriaBuilder<T> {
   private final List<Optional<Predicate>> predicates = new ArrayList<>();
   private final List<Optional<Predicate>> predicatesCount = new ArrayList<>();
 
-  public PagedCriteriaBuilder(EntityManager entityManager, Class<T> rootClass) {
+  public PagedWrapperDao(EntityManager entityManager, Class<T> rootClass) {
     this.entityManager = entityManager;
 
     this.criteriaBuilder = entityManager.getCriteriaBuilder();

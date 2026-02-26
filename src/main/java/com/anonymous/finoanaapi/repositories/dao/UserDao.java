@@ -18,21 +18,20 @@ public class UserDao {
 
   // TODO: create a criteria for more clean code
   public Page<User> findByCriteria(String name, Pageable pageable) {
-    var pagedCriteriaBuilder = new PagedCriteriaBuilder<>(entityManager, User.class);
+    var dao = new PagedWrapperDao<>(entityManager, User.class);
 
-    pagedCriteriaBuilder.addPredicate(
+    dao.addPredicate(
         (r, c) -> {
-          if (name != null) {
-            var firstnamePredicate =
-                c.like(c.lower(r.get(FIRST_NAME_ATTRIBUTE)), "%" + name.toLowerCase() + "%");
-            var lastnamePredicate =
-                c.like(c.lower(r.get(LAST_NAME_ATTRIBUTE)), "%" + name.toLowerCase() + "%");
+          if (name == null) return Optional.empty();
 
-            return Optional.of(c.or(firstnamePredicate, lastnamePredicate));
-          }
-          return Optional.empty();
+          var namePattern = "%" + name.toLowerCase() + "%";
+
+          var firstnamePredicate = c.like(c.lower(r.get(FIRST_NAME_ATTRIBUTE)), namePattern);
+          var lastnamePredicate = c.like(c.lower(r.get(LAST_NAME_ATTRIBUTE)), namePattern);
+
+          return Optional.of(c.or(firstnamePredicate, lastnamePredicate));
         });
 
-    return pagedCriteriaBuilder.retrieve(pageable);
+    return dao.retrieve(pageable);
   }
 }
