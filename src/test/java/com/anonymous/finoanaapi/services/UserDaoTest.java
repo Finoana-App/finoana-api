@@ -23,13 +23,15 @@ class UserDaoTest extends TestConfig {
     var userWithCommonName = userWithCommonName();
     var userWithStrangeFirstName = userWithStrangeFirstName();
     var userWithStrangeLastName = userWithStrangeLastName();
-    userRepository.saveAll(
-        List.of(userWithCommonName, userWithStrangeLastName, userWithStrangeFirstName));
+      var users = userRepository.saveAll(
+            List.of(userWithCommonName, userWithStrangeLastName, userWithStrangeFirstName));
 
-    var found = subject.findByCriteria("strange", Pageable.ofSize(10));
+    var noFilter = subject.findByCriteria(null, Pageable.ofSize(10));
+    var filterByName = subject.findByCriteria("strange", Pageable.ofSize(10));
 
-    assertTrue(found.getContent().contains(userWithStrangeFirstName));
-    assertTrue(found.getContent().contains(userWithStrangeLastName));
+    assertTrue(noFilter.getContent().containsAll(users));
+    assertTrue(filterByName.getContent().contains(userWithStrangeFirstName));
+    assertTrue(filterByName.getContent().contains(userWithStrangeLastName));
   }
 
   private User userWithStrangeLastName() {

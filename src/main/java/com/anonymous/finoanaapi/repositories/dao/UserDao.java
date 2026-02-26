@@ -5,9 +5,9 @@ import static com.anonymous.finoanaapi.models.User.LAST_NAME_ATTRIBUTE;
 
 import com.anonymous.finoanaapi.models.User;
 import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,28 +18,21 @@ public class UserDao {
 
   // TODO: create a criteria for more clean code
   public Page<User> findByCriteria(String name, Pageable pageable) {
-    var pagedCriteriaBuilder = new PagedCriteriaBuilder(entityManager, User.class, User.class);
+    var pagedCriteriaBuilder = new PagedCriteriaBuilder<>(entityManager, User.class);
 
     pagedCriteriaBuilder.addPredicate(
-        name != null,
         (r, c) -> {
-          var firstnamePredicate =
-              c.like(c.lower(r.get(FIRST_NAME_ATTRIBUTE)), "%" + name.toLowerCase() + "%");
-          var lastnamePredicate =
-              c.like(c.lower(r.get(LAST_NAME_ATTRIBUTE)), "%" + name.toLowerCase() + "%");
+          if (name != null) {
+            var firstnamePredicate =
+                c.like(c.lower(r.get(FIRST_NAME_ATTRIBUTE)), "%" + name.toLowerCase() + "%");
+            var lastnamePredicate =
+                c.like(c.lower(r.get(LAST_NAME_ATTRIBUTE)), "%" + name.toLowerCase() + "%");
 
-          return c.or(firstnamePredicate, lastnamePredicate);
+            return Optional.of(c.or(firstnamePredicate, lastnamePredicate));
+          }
+          return Optional.empty();
         });
 
-    var offset = Math.toIntExact(pageable.getOffset());
-    var resultList =
-        entityManager
-            .createQuery(pagedCriteriaBuilder.getQuery())
-            .setFirstResult(offset)
-            .setMaxResults(pageable.getPageSize())
-            .getResultList();
-    var resultCount =
-        entityManager.createQuery(pagedCriteriaBuilder.getCountQuery()).getSingleResult();
-    return new PageImpl<>(resultList, pageable, resultCount);
+    return pagedCriteriaBuilder.retrieve(pageable);
   }
 }
