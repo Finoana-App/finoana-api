@@ -6,10 +6,12 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Builder
+@ToString
 @AllArgsConstructor
 public class Principal implements UserDetails {
   private final String id;
