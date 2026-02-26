@@ -3,16 +3,19 @@ package com.anonymous.finoanaapi.utils;
 import static com.anonymous.finoanaapi.models.enums.UserRole.COMMON;
 
 import com.anonymous.finoanaapi.models.User;
+import net.datafaker.Faker;
 
 public class DummyUser {
+  private static final Faker faker = new Faker();
+
   public static User someUser() {
     return User.builder()
-        .email("test." + Math.round(Math.random() * 10_000) + "@gmail.com")
-        .firstName("test")
-        .lastName("test")
-        .avatarUrl("url")
+        .email(faker.internet().emailAddress())
+        .firstName(faker.name().firstName())
+        .lastName(faker.name().lastName())
+        .avatarUrl(faker.internet().url())
         .role(COMMON)
-        .displayName("test")
+        .displayName(faker.funnyName().name())
         .build();
   }
 }

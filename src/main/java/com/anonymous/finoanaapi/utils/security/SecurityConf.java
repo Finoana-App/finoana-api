@@ -45,6 +45,8 @@ public class SecurityConf {
                 .authenticated()
                 .requestMatchers(PUT, "/users/me")
                 .authenticated()
+                .requestMatchers(GET, "/users/search")
+                .authenticated()
                 .requestMatchers(GET, "/users/*")
                 .authenticated()
                 .anyRequest()
