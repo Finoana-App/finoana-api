@@ -1,6 +1,6 @@
 package com.anonymous.finoanaapi.controllers.mapper;
 
-import static com.anonymous.finoanaapi.controllers.model.User.PrivacyLevelEnum.PUBLIC;
+import static com.anonymous.finoanaapi.controllers.model.PrivacyLevelEnum.PUBLIC;
 
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.utils.exceptions.NotSupportedMapping;

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserRoleMapper extends AbstractDomaineToRestMapper<UserRole, RoleEnum> {
   @Override
+  // TODO: remove unnecessary exception
   public RoleEnum toRest(UserRole domain) throws NotSupportedMapping {
     // TODO: need to be renamed
     return switch (domain) {

@@ -209,14 +209,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
               example:
-                message: Profile updated successfully
                 user:
                   id: 550e8400-e29b-41d4-a716-446655440000
                   email: jean.rakoto@example.com
@@ -513,14 +507,7 @@ components:
           example: user
 
         privacyLevel:
-          type: string
-          enum: [public, private, anonymous]
-          description: |
-            User's privacy settings:
-            - `public` - Profile visible to all users
-            - `private` - Profile visible only to connections
-            - `anonymous` - Profile hidden, only display name shown
-          example: public
+          $ref: "#/components/schemas/PrivacyLevelEnum"
 
         isVerified:
           type: boolean
@@ -589,10 +576,7 @@ components:
           example: Passionate about faith, family, and community service
 
         privacyLevel:
-          type: string
-          enum: [public, private, anonymous]
-          description: Updated privacy level
-          example: private
+          $ref: "#/components/schemas/PrivacyLevelEnum"
     UpdateRoleInput:
       type: object
       description: Role update data (admin only)
@@ -736,6 +720,15 @@ components:
           type: string
           enum: [pong]
           example: pong
+    PrivacyLevelEnum:
+      type: string
+      enum: [public, private, anonymous]
+      description: |
+        User's privacy settings:
+        - `public` - Profile visible to all users
+        - `private` - Profile visible only to connections
+        - `anonymous` - Profile hidden, only display name shown
+      example: public
 
   parameters:
     userId:

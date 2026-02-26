@@ -37,7 +37,7 @@ public class User {
   @GeneratedValue(strategy = IDENTITY)
   private String id;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false, unique = true, updatable = false)
   private String email;
 
   @Column(name = "first_name", nullable = false)
