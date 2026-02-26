@@ -40,10 +40,10 @@ public class User {
   @Column(nullable = false, unique = true, updatable = false)
   private String email;
 
-  @Column(name = "first_name", nullable = false)
+  @Column(name = FIRST_NAME_COLUMN, nullable = false)
   private String firstName;
 
-  @Column(name = "last_name", nullable = false)
+  @Column(name = LAST_NAME_COLUMN, nullable = false)
   private String lastName;
 
   @Column(name = "display_name")
@@ -86,4 +86,9 @@ public class User {
   @EqualsAndHashCode.Exclude
   @Column(name = "last_login")
   private Instant lastLogin;
+
+  public static final String FIRST_NAME_COLUMN = "first_name";
+  public static final String LAST_NAME_COLUMN = "last_name";
+  public static final String FIRST_NAME_ATTRIBUTE = "firstName";
+  public static final String LAST_NAME_ATTRIBUTE = "lastName";
 }
