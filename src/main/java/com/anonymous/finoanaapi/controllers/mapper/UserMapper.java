@@ -3,7 +3,6 @@ package com.anonymous.finoanaapi.controllers.mapper;
 import static com.anonymous.finoanaapi.controllers.model.PrivacyLevelEnum.PUBLIC;
 
 import com.anonymous.finoanaapi.models.User;
-import com.anonymous.finoanaapi.utils.exceptions.NotSupportedMapping;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +13,7 @@ public class UserMapper
   private final UserRoleMapper userRoleMapper;
 
   @Override
-  public com.anonymous.finoanaapi.controllers.model.User toRest(User domain)
-      throws NotSupportedMapping {
+  public com.anonymous.finoanaapi.controllers.model.User toRest(User domain) {
     return new com.anonymous.finoanaapi.controllers.model.User()
         .id(domain.getId())
         .bio(domain.getBio())

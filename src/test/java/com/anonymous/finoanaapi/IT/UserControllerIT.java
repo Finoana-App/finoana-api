@@ -11,7 +11,6 @@ import com.anonymous.finoanaapi.controllers.client.ApiException;
 import com.anonymous.finoanaapi.controllers.mapper.UserMapper;
 import com.anonymous.finoanaapi.controllers.model.UpdateProfileInput;
 import com.anonymous.finoanaapi.models.User;
-import com.anonymous.finoanaapi.utils.exceptions.NotSupportedMapping;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,14 +29,14 @@ public class UserControllerIT extends TestConfig {
   }
 
   @Test
-  void get_current_user_ok() throws ApiException, NotSupportedMapping {
+  void get_current_user_ok() throws ApiException {
     var usersApi = new UsersApi(anApiClient(token));
     var currentUser = usersApi.getCurrentUser();
     assertEquals(userMapper.toRest(user), currentUser.getUser());
   }
 
   @Test
-  void user_get_own_by_id_ok() throws ApiException, NotSupportedMapping {
+  void user_get_own_by_id_ok() throws ApiException {
     var usersApi = new UsersApi(anApiClient(token));
     var currentUser = usersApi.getUserById(user.getId());
     assertEquals(userMapper.toRest(user), currentUser.getUser());
@@ -50,7 +49,7 @@ public class UserControllerIT extends TestConfig {
   }
 
   @Test
-  void user_update_own_info_ok() throws ApiException, NotSupportedMapping {
+  void user_update_own_info_ok() throws ApiException {
     var newBio = "hello";
     var usersApi = new UsersApi(anApiClient(token));
     var actualUserInfo = usersApi.updateCurrentUser(new UpdateProfileInput().bio(newBio));

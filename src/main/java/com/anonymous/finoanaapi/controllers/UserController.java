@@ -10,7 +10,6 @@ import com.anonymous.finoanaapi.controllers.model.UpdateProfileInput;
 import com.anonymous.finoanaapi.controllers.model.User;
 import com.anonymous.finoanaapi.controllers.model.UserResponse;
 import com.anonymous.finoanaapi.services.UserService;
-import com.anonymous.finoanaapi.utils.exceptions.NotSupportedMapping;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,18 +27,18 @@ public class UserController {
   private final UserMapper userMapper;
 
   @GetMapping("/users/me")
-  UserResponse getCurrentUser() throws NotSupportedMapping {
+  UserResponse getCurrentUser() {
     var currentUser = principalToUserMapper.toRest(getPrincipal());
     return new UserResponse().user(currentUser);
   }
 
   @GetMapping("/users/{id}")
-  UserResponse getUserById(@PathVariable String id) throws NotSupportedMapping {
+  UserResponse getUserById(@PathVariable String id) {
     return userToUserResponseMapper.toRest(userService.getById(id));
   }
 
   @PutMapping("/users/me")
-  User updateCurrentUser(@RequestBody UpdateProfileInput restUser) throws NotSupportedMapping {
+  User updateCurrentUser(@RequestBody UpdateProfileInput restUser) {
     var user = userUpdateDtoToUpdateProfileInputMapper.toDomain(restUser);
     var save = userService.update(getPrincipal().getId(), user);
     return userMapper.toRest(save);
