@@ -1,5 +1,7 @@
 package com.anonymous.finoanaapi.utils.security;
 
+import static org.springframework.http.HttpMethod.GET;
+
 import com.anonymous.finoanaapi.controllers.exceptions.ForbiddenException;
 import com.anonymous.finoanaapi.utils.security.firebase.FirebaseFilter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +36,13 @@ public class SecurityConf {
     http.authorizeHttpRequests(
         request ->
             request
-                .requestMatchers("/health/ping")
+                .requestMatchers(GET, "/health/ping")
                 .anonymous()
-                .requestMatchers("/health/secured/ping")
+                .requestMatchers(GET, "/health/secured/ping")
                 .authenticated()
-                .requestMatchers("/users/me")
+                .requestMatchers(GET, "/users/me")
+                .authenticated()
+                .requestMatchers(GET, "/users/*")
                 .authenticated()
                 .anyRequest()
                 .denyAll());
