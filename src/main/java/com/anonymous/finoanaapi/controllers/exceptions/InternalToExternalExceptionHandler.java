@@ -21,6 +21,11 @@ public class InternalToExternalExceptionHandler {
     return toRestResponse(exception, NOT_FOUND);
   }
 
+  @ExceptionHandler(value = BadRequestException.class)
+  ResponseEntity<ApiException> handleBadRequest(BadRequestException exception) {
+    return toRestResponse(exception, BAD_REQUEST);
+  }
+
   private static ResponseEntity toRestResponse(Exception exception, HttpStatus status) {
     return new ResponseEntity<>(toRest(exception, status), status);
   }

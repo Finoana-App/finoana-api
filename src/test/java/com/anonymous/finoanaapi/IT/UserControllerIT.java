@@ -1,6 +1,7 @@
 package com.anonymous.finoanaapi.IT;
 
 import static com.anonymous.finoanaapi.config.FirebaseConfig.setupFirebaseAuthUser;
+import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsBadRequestException;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsNotFoundException;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
@@ -116,5 +117,52 @@ public class UserControllerIT extends TestConfig {
     assertEquals(userMapper.toRest(user), registered);
 
     userRepository.deleteById(registeredId);
+  }
+
+  @Test
+  void user_login_process_without_information_ko() throws FirebaseAuthException, ApiException {
+    var token = someToken();
+    var user = someUser();
+    setupFirebaseAuthUser(token, user.getEmail(), user.getFirstName(), user.getAvatarUrl());
+
+    var usersApi = new UsersApi(anApiClient());
+
+    var requestWithoutToken =
+        new RegisterInput()
+            .bio(user.getBio())
+            .displayName(user.getDisplayName())
+            .email(user.getEmail())
+            .photoUrl(user.getAvatarUrl())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName());
+    var requestWithoutOtherInfo = new RegisterInput().email(user.getEmail()).firebaseToken(token);
+    var requestWithWrongEmail =
+        new RegisterInput()
+            .firebaseToken(token)
+            .bio(user.getBio())
+            .displayName(user.getDisplayName())
+            .email("test" + user.getEmail())
+            .photoUrl(user.getAvatarUrl())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName());
+
+    assertThrowsBadRequestException(
+        () -> usersApi.registerUser(requestWithoutToken),
+        e -> assertTrue(e.getMessage().contains("No token provided")));
+    assertThrowsBadRequestException(
+        () -> usersApi.registerUser(requestWithoutOtherInfo),
+        e -> {
+          assertTrue(e.getMessage().contains("No last name provided"));
+          assertTrue(e.getMessage().contains("No first provided"));
+          assertTrue(e.getMessage().contains("No display name provided"));
+        });
+    assertThrowsBadRequestException(
+        () -> usersApi.registerUser(requestWithWrongEmail),
+        e ->
+            assertTrue(
+                e.getMessage()
+                    .contains(
+                        " doesn't match the owner of the FireBase token provided. The email must be %s"
+                            .formatted(user.getEmail()))));
   }
 }

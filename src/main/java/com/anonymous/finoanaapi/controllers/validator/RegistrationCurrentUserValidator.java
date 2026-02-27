@@ -18,7 +18,7 @@ public class RegistrationCurrentUserValidator implements Consumer<RegisterInput>
   public void accept(RegisterInput toSave) {
     var token = toSave.getFirebaseToken();
 
-    if (token.isBlank()) {
+    if (token == null || token.isBlank()) {
       throw new BadRequestException("No token provided");
     }
 
