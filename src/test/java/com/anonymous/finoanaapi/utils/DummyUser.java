@@ -16,6 +16,7 @@ public class DummyUser {
         .avatarUrl(faker.internet().url())
         .role(COMMON)
         .displayName(faker.funnyName().name())
+        .bio(faker.lorem().paragraph(5))
         .build();
   }
 }

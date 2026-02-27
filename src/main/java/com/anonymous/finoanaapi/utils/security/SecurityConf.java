@@ -49,7 +49,7 @@ public class SecurityConf {
                 .requestMatchers(GET, "/users/search")
                 .authenticated()
                 .requestMatchers(POST, "/users/register")
-                .authenticated()
+                .permitAll()
                 .requestMatchers(GET, "/users/*")
                 .authenticated()
                 .anyRequest()

@@ -16,6 +16,7 @@ import com.anonymous.finoanaapi.controllers.model.UpdateProfileInput;
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.repositories.UserRepository;
 import com.google.firebase.auth.FirebaseAuthException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,11 @@ public class UserControllerIT extends TestConfig {
     user = someUser();
     token = someToken();
     userRegistration.registerWithFirebase(user, token);
+  }
+
+  @AfterEach
+  void setDown() {
+    userRepository.delete(user);
   }
 
   @Test
@@ -89,10 +95,26 @@ public class UserControllerIT extends TestConfig {
     var user = someUser();
     setupFirebaseAuthUser(token, user.getEmail(), user.getFirstName(), user.getAvatarUrl());
 
-    var usersApi = new UsersApi(anApiClient(token));
+    var usersApi = new UsersApi(anApiClient());
 
-    var registered =
-        usersApi.registerUser(new RegisterInput().bio(user.getBio()).email(user.getEmail()));
+    // TODO: test without token
+    var registerInput =
+        new RegisterInput()
+            .firebaseToken(token)
+            .bio(user.getBio())
+            .displayName(user.getDisplayName())
+            .email(user.getEmail())
+            .photoUrl(user.getAvatarUrl())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName());
+
+    var registered = usersApi.registerUser(registerInput);
+    var registeredId = registered.getId();
+
+    registered.setId(null);
+    registered.setCreatedAt(null);
     assertEquals(userMapper.toRest(user), registered);
+
+    userRepository.deleteById(registeredId);
   }
 }

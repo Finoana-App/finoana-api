@@ -7,12 +7,14 @@ import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserToUserResponseMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserUpdateDtoToUpdateProfileInputMapper;
 import com.anonymous.finoanaapi.controllers.model.*;
+import com.anonymous.finoanaapi.controllers.validator.RegistrationCurrentUserValidator;
+import com.anonymous.finoanaapi.controllers.validator.UserRegistrationDtoValidator;
 import com.anonymous.finoanaapi.repositories.dao.UserDao;
 import com.anonymous.finoanaapi.repositories.dao.UserDao.Criteria;
 import com.anonymous.finoanaapi.services.PrincipalService;
 import com.anonymous.finoanaapi.services.UserService;
-import com.anonymous.finoanaapi.utils.exceptions.RegistrationException;
 import jakarta.websocket.server.PathParam;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,8 @@ public class UserController {
   private final UserMapper userMapper;
   private final UserDao userDao;
   private final RegisterUserMapper registerUserMapper;
+  private final RegistrationCurrentUserValidator registrationCurrentUserValidator;
+  private final UserRegistrationDtoValidator userRegistrationDtoValidator;
 
   @GetMapping("/users/me")
   UserResponse getCurrentUser() {
@@ -54,10 +58,12 @@ public class UserController {
   }
 
   @PostMapping("/users/register")
-  User registerUser(@RequestBody RegisterInput registerInput) throws RegistrationException {
-    var registerUser =
-        principalService.registerUser(
-            registerUserMapper.toDomain(getPrincipal().getId(), registerInput), getPrincipal());
+  User registerUser(@RequestBody RegisterInput registerInput) {
+    registrationCurrentUserValidator.accept(registerInput);
+    var registerInputDomain = registerUserMapper.toDomain(registerInput);
+    userRegistrationDtoValidator.accept(registerInputDomain);
+
+    var registerUser = userService.registerUser(List.of(registerInputDomain)).getFirst();
     return userMapper.toRest(registerUser);
   }
 }

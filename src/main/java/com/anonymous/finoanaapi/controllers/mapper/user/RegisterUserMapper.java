@@ -11,15 +11,13 @@ public class RegisterUserMapper
     extends AbstractDomaineToRestMapper<UserRegistrationDto, RegisterInput> {
   @Override
   public UserRegistrationDto toDomain(RegisterInput rest) {
-    return toDomain(null, rest);
-  }
-
-  public UserRegistrationDto toDomain(String id, RegisterInput rest) {
     return new UserRegistrationDto(
-        id,
+        rest.getFirebaseToken(),
         rest.getEmail(),
+        rest.getFirstName(),
+        rest.getLastName(),
         rest.getDisplayName(),
-        Optional.ofNullable(rest.getBio()),
+        Optional.ofNullable(rest.getPhotoUrl()),
         Optional.ofNullable(rest.getBio()));
   }
 }

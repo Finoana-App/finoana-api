@@ -528,6 +528,9 @@ components:
       required:
         - email
         - displayName
+        - firebaseToken
+        - firstName
+        - lastName
       properties:
         email:
           type: string
@@ -551,6 +554,21 @@ components:
           type: string
           description: Optional user biography
           example: New member of the Finoana community, excited to connect with fellow believers
+
+        firebaseToken:
+          type: string
+          description: fire base token
+          example: 123dshdhfoqwe7777771398uwoijwod
+
+        firstName:
+          type: string
+          description: user first name
+          example: Jean Pierre
+
+        lastName:
+          type: string
+          description: user last name
+          example: Rakoto
     UpdateProfileInput:
       type: object
       description: User profile update data

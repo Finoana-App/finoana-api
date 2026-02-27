@@ -3,6 +3,7 @@ package com.anonymous.finoanaapi.services;
 import static com.anonymous.finoanaapi.controllers.model.PrivacyLevelEnum.ANONYMOUS;
 
 import com.anonymous.finoanaapi.models.User;
+import com.anonymous.finoanaapi.models.dto.UserRegistrationDto;
 import com.anonymous.finoanaapi.models.dto.UserUpdateDto;
 import com.anonymous.finoanaapi.repositories.UserRepository;
 import com.anonymous.finoanaapi.utils.exceptions.NotFoundException;
@@ -26,6 +27,10 @@ public class UserService {
 
   public User save(User user) {
     return saveAll(List.of(user)).getFirst();
+  }
+
+  public List<User> registerUser(List<UserRegistrationDto> toSave) {
+    return userRepository.saveAll(toSave.stream().map(User::new).toList());
   }
 
   @Transactional
