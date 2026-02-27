@@ -66,4 +66,14 @@ public class UserController {
     var registerUser = userService.registerUser(List.of(registerInputDomain)).getFirst();
     return userMapper.toRest(registerUser);
   }
+
+  @DeleteMapping("/users/me")
+  SuccessResponse deactivateCurrentUser() {
+    principalService.disableUser(getPrincipal());
+    return getAccountDeactivatedSuccessfullyResponse();
+  }
+
+  public static SuccessResponse getAccountDeactivatedSuccessfullyResponse() {
+    return new SuccessResponse().message("Account deactivated successfully");
+  }
 }

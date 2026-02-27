@@ -18,4 +18,10 @@ public class PrincipalService {
         .orElseThrow(
             () -> new NotFoundException("User associate with principal: %s".formatted(principal)));
   }
+
+  public User disableUser(Principal toDisable) {
+    var user = getUser(toDisable);
+    user.inactiveUser();
+    return userRepository.save(user);
+  }
 }

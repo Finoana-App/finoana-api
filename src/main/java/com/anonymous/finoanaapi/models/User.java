@@ -2,10 +2,13 @@ package com.anonymous.finoanaapi.models;
 
 import static com.anonymous.finoanaapi.models.enums.UserRole.USER;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVATED;
+import static com.anonymous.finoanaapi.models.enums.UserStatus.INACTIVATED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.NONE;
 import static org.hibernate.type.SqlTypes.NAMED_ENUM;
 
+import com.anonymous.finoanaapi.controllers.exceptions.BadRequestException;
 import com.anonymous.finoanaapi.models.dto.UserRegistrationDto;
 import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.anonymous.finoanaapi.models.enums.UserStatus;
@@ -66,6 +69,7 @@ public class User {
   @Enumerated(STRING)
   @Column(nullable = false)
   @JdbcTypeCode(NAMED_ENUM)
+  @Setter(NONE)
   private UserStatus status = ACTIVATED;
 
   @Builder.Default
@@ -104,5 +108,12 @@ public class User {
     isAnonymousByDefault = false;
     role = USER;
     status = ACTIVATED;
+  }
+
+  public void inactiveUser() {
+    if (status == INACTIVATED) {
+      throw new BadRequestException("User status already inactivated");
+    }
+    status = INACTIVATED;
   }
 }

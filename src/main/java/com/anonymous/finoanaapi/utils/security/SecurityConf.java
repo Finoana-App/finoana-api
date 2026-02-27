@@ -1,5 +1,6 @@
 package com.anonymous.finoanaapi.utils.security;
 
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
@@ -38,20 +39,26 @@ public class SecurityConf {
     http.authorizeHttpRequests(
         request ->
             request
+                // Health check
                 .requestMatchers(GET, "/health/ping")
                 .anonymous()
                 .requestMatchers(GET, "/health/secured/ping")
                 .authenticated()
+                // Current user
                 .requestMatchers(GET, "/users/me")
                 .authenticated()
                 .requestMatchers(PUT, "/users/me")
                 .authenticated()
+                .requestMatchers(DELETE, "/users/me")
+                .authenticated()
+                // Basic user manipulation
                 .requestMatchers(GET, "/users/search")
                 .authenticated()
                 .requestMatchers(POST, "/users/register")
                 .permitAll()
                 .requestMatchers(GET, "/users/*")
                 .authenticated()
+                // Other
                 .anyRequest()
                 .denyAll());
 

@@ -3,6 +3,7 @@ package com.anonymous.finoanaapi.IT;
 import static com.anonymous.finoanaapi.config.FirebaseConfig.setupFirebaseAuthUser;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsBadRequestException;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsNotFoundException;
+import static com.anonymous.finoanaapi.controllers.UserController.getAccountDeactivatedSuccessfullyResponse;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -164,5 +165,21 @@ public class UserControllerIT extends TestConfig {
                     .contains(
                         " doesn't match the owner of the FireBase token provided. The email must be %s"
                             .formatted(user.getEmail()))));
+  }
+
+  @Test
+  void inactivate_current_user_ok() throws ApiException {
+    var usersApi = new UsersApi(anApiClient(token));
+    var successResponse = usersApi.deactivateCurrentUser();
+    assertEquals(getAccountDeactivatedSuccessfullyResponse(), successResponse);
+  }
+
+  @Test
+  void inactivate_current_user_twice_not_ko() throws ApiException {
+    var usersApi = new UsersApi(anApiClient(token));
+    var successResponse = usersApi.deactivateCurrentUser();
+    assertEquals(getAccountDeactivatedSuccessfullyResponse(), successResponse);
+
+    assertThrowsBadRequestException(() -> usersApi.deactivateCurrentUser());
   }
 }
