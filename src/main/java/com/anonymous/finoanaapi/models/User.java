@@ -1,6 +1,6 @@
 package com.anonymous.finoanaapi.models;
 
-import static com.anonymous.finoanaapi.models.enums.UserRole.COMMON;
+import static com.anonymous.finoanaapi.models.enums.UserRole.USER;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVATED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -102,7 +102,7 @@ public class User {
     firstName = registerInput.firstName();
     lastName = registerInput.lastName();
     isAnonymousByDefault = false;
-    role = COMMON;
+    role = USER;
     status = ACTIVATED;
   }
 }

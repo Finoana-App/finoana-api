@@ -1,6 +1,6 @@
 package com.anonymous.finoanaapi.utils;
 
-import static com.anonymous.finoanaapi.models.enums.UserRole.COMMON;
+import static com.anonymous.finoanaapi.models.enums.UserRole.USER;
 
 import com.anonymous.finoanaapi.models.User;
 import net.datafaker.Faker;
@@ -14,7 +14,7 @@ public class DummyUser {
         .firstName(faker.name().firstName())
         .lastName(faker.name().lastName())
         .avatarUrl(faker.internet().url())
-        .role(COMMON)
+        .role(USER)
         .displayName(faker.funnyName().name())
         .bio(faker.lorem().paragraph(5))
         .build();

@@ -494,14 +494,7 @@ components:
           example: Follower of Christ, passionate about community and prayer
 
         role:
-          type: string
-          enum: [user, moderator, admin]
-          description: |
-            User's role in the platform:
-            - `user` - Regular community member
-            - `moderator` - Can moderate content and ban users
-            - `admin` - Full administrative access
-          example: user
+          $ref: "#/components/schemas/UserRole"
 
         privacyLevel:
           $ref: "#/components/schemas/PrivacyLevelEnum"
@@ -599,10 +592,16 @@ components:
         - role
       properties:
         role:
-          type: string
-          enum: [user, moderator, admin]
-          description: New role to assign to the user
-          example: moderator
+          $ref: "#/components/schemas/UserRole"
+    UserRole:
+      type: string
+      enum: [user, moderator, admin]
+      description: |
+        User's role in the platform:
+        - `user` - Regular community member
+        - `moderator` - Can moderate content and ban users
+        - `admin` - Full administrative access
+      example: user
     SuccessResponse:
       type: object
       description: Generic success response
