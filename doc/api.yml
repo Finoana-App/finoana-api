@@ -94,7 +94,9 @@ paths:
   /users/register:
     post:
       summary: Register New User
-      description: Creates a new user account in the Finoana platform.
+      description: |
+        Creates a new user account in the Finoana platform.
+        Must use a token linked with the current email to register in Finoana platform.
       operationId: registerUser
       tags:
         - Users
@@ -117,12 +119,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
               example:
                 message: User registered successfully
                 user:

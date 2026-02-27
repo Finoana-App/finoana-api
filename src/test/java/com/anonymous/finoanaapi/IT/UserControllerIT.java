@@ -1,5 +1,6 @@
 package com.anonymous.finoanaapi.IT;
 
+import static com.anonymous.finoanaapi.config.FirebaseConfig.setupFirebaseAuthUser;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsNotFoundException;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
@@ -9,7 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.anonymous.finoanaapi.config.TestConfig;
 import com.anonymous.finoanaapi.controllers.api.UsersApi;
 import com.anonymous.finoanaapi.controllers.client.ApiException;
-import com.anonymous.finoanaapi.controllers.mapper.UserMapper;
+import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
+import com.anonymous.finoanaapi.controllers.model.RegisterInput;
 import com.anonymous.finoanaapi.controllers.model.UpdateProfileInput;
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.repositories.UserRepository;
@@ -79,5 +81,18 @@ public class UserControllerIT extends TestConfig {
     var searchUsers = usersApi.searchUsers(domainUser.getFirstName(), 10);
 
     assertTrue(searchUsers.getUsers().contains(restUser));
+  }
+
+  @Test
+  void user_login_process_ok() throws FirebaseAuthException, ApiException {
+    var token = someToken();
+    var user = someUser();
+    setupFirebaseAuthUser(token, user.getEmail(), user.getFirstName(), user.getAvatarUrl());
+
+    var usersApi = new UsersApi(anApiClient(token));
+
+    var registered =
+        usersApi.registerUser(new RegisterInput().bio(user.getBio()).email(user.getEmail()));
+    assertEquals(userMapper.toRest(user), registered);
   }
 }

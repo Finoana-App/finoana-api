@@ -1,6 +1,7 @@
 package com.anonymous.finoanaapi.utils.security;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 
 import com.anonymous.finoanaapi.controllers.exceptions.ForbiddenException;
@@ -46,6 +47,8 @@ public class SecurityConf {
                 .requestMatchers(PUT, "/users/me")
                 .authenticated()
                 .requestMatchers(GET, "/users/search")
+                .authenticated()
+                .requestMatchers(POST, "/users/register")
                 .authenticated()
                 .requestMatchers(GET, "/users/*")
                 .authenticated()

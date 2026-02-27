@@ -1,5 +1,6 @@
-package com.anonymous.finoanaapi.controllers.mapper;
+package com.anonymous.finoanaapi.controllers.mapper.user;
 
+import com.anonymous.finoanaapi.controllers.mapper.AbstractDomaineToRestMapper;
 import com.anonymous.finoanaapi.controllers.model.UserResponse;
 import com.anonymous.finoanaapi.models.User;
 import lombok.AllArgsConstructor;

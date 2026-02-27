@@ -1,7 +1,8 @@
-package com.anonymous.finoanaapi.controllers.mapper;
+package com.anonymous.finoanaapi.controllers.mapper.user;
 
 import static com.anonymous.finoanaapi.controllers.model.PrivacyLevelEnum.PUBLIC;
 
+import com.anonymous.finoanaapi.controllers.mapper.AbstractDomaineToRestMapper;
 import com.anonymous.finoanaapi.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

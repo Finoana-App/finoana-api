@@ -5,6 +5,7 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static org.hibernate.type.SqlTypes.NAMED_ENUM;
 
+import com.anonymous.finoanaapi.models.dto.UserRegistrationDto;
 import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.anonymous.finoanaapi.models.enums.UserStatus;
 import jakarta.persistence.Column;
@@ -91,4 +92,11 @@ public class User {
   public static final String LAST_NAME_COLUMN = "last_name";
   public static final String FIRST_NAME_ATTRIBUTE = "firstName";
   public static final String LAST_NAME_ATTRIBUTE = "lastName";
+
+  public User(UserRegistrationDto registerInput) {
+    bio = registerInput.bio().orElse(null);
+    displayName = registerInput.displayName();
+    avatarUrl = registerInput.photoUrl().orElse(null);
+    email = registerInput.email();
+  }
 }

@@ -2,25 +2,20 @@ package com.anonymous.finoanaapi.controllers;
 
 import static com.anonymous.finoanaapi.utils.security.firebase.FirebaseFilter.getPrincipal;
 
-import com.anonymous.finoanaapi.controllers.mapper.UserMapper;
-import com.anonymous.finoanaapi.controllers.mapper.UserToUserResponseMapper;
-import com.anonymous.finoanaapi.controllers.mapper.UserUpdateDtoToUpdateProfileInputMapper;
-import com.anonymous.finoanaapi.controllers.model.SearchUsersResponse;
-import com.anonymous.finoanaapi.controllers.model.UpdateProfileInput;
-import com.anonymous.finoanaapi.controllers.model.User;
-import com.anonymous.finoanaapi.controllers.model.UserResponse;
+import com.anonymous.finoanaapi.controllers.mapper.user.RegisterUserMapper;
+import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
+import com.anonymous.finoanaapi.controllers.mapper.user.UserToUserResponseMapper;
+import com.anonymous.finoanaapi.controllers.mapper.user.UserUpdateDtoToUpdateProfileInputMapper;
+import com.anonymous.finoanaapi.controllers.model.*;
 import com.anonymous.finoanaapi.repositories.dao.UserDao;
 import com.anonymous.finoanaapi.repositories.dao.UserDao.Criteria;
 import com.anonymous.finoanaapi.services.PrincipalService;
 import com.anonymous.finoanaapi.services.UserService;
+import com.anonymous.finoanaapi.utils.exceptions.RegistrationException;
 import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
@@ -31,6 +26,7 @@ public class UserController {
   private final UserUpdateDtoToUpdateProfileInputMapper userUpdateDtoToUpdateProfileInputMapper;
   private final UserMapper userMapper;
   private final UserDao userDao;
+  private final RegisterUserMapper registerUserMapper;
 
   @GetMapping("/users/me")
   UserResponse getCurrentUser() {
@@ -55,5 +51,13 @@ public class UserController {
     return new SearchUsersResponse()
         .count(users.getSize())
         .users(users.getContent().stream().map(userMapper::toRest).toList());
+  }
+
+  @PostMapping("/users/register")
+  User registerUser(@RequestBody RegisterInput registerInput) throws RegistrationException {
+    var registerUser =
+        principalService.registerUser(
+            registerUserMapper.toDomain(getPrincipal().getId(), registerInput), getPrincipal());
+    return userMapper.toRest(registerUser);
   }
 }

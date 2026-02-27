@@ -1,8 +1,9 @@
-package com.anonymous.finoanaapi.controllers.mapper;
+package com.anonymous.finoanaapi.controllers.mapper.user;
 
 import static com.anonymous.finoanaapi.controllers.model.User.RoleEnum.MODERATOR;
 import static com.anonymous.finoanaapi.controllers.model.User.RoleEnum.USER;
 
+import com.anonymous.finoanaapi.controllers.mapper.AbstractDomaineToRestMapper;
 import com.anonymous.finoanaapi.controllers.model.User.RoleEnum;
 import com.anonymous.finoanaapi.models.enums.UserRole;
 import org.springframework.stereotype.Component;
