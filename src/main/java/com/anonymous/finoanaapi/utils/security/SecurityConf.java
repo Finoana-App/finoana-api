@@ -1,5 +1,6 @@
 package com.anonymous.finoanaapi.utils.security;
 
+import static com.anonymous.finoanaapi.models.enums.UserRole.MODERATOR;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -52,6 +53,8 @@ public class SecurityConf {
                 .requestMatchers(DELETE, "/users/me")
                 .authenticated()
                 // Basic user manipulation
+                .requestMatchers(GET, "/users")
+                .hasRole(MODERATOR.getRole())
                 .requestMatchers(GET, "/users/search")
                 .authenticated()
                 .requestMatchers(POST, "/users/register")

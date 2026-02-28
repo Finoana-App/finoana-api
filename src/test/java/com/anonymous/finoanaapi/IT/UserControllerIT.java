@@ -2,14 +2,18 @@ package com.anonymous.finoanaapi.IT;
 
 import static com.anonymous.finoanaapi.config.FirebaseConfig.setupFirebaseAuthUser;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsBadRequestException;
+import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsForbiddenException;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsNotFoundException;
 import static com.anonymous.finoanaapi.controllers.UserController.getAccountDeactivatedSuccessfullyResponse;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
+import static com.anonymous.finoanaapi.utils.DummyUser.someModerator;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.anonymous.finoanaapi.config.TestConfig;
+import com.anonymous.finoanaapi.controllers.api.AdministrationApi;
 import com.anonymous.finoanaapi.controllers.api.UsersApi;
 import com.anonymous.finoanaapi.controllers.client.ApiException;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
@@ -181,5 +185,28 @@ public class UserControllerIT extends TestConfig {
     assertEquals(getAccountDeactivatedSuccessfullyResponse(), successResponse);
 
     assertThrowsBadRequestException(() -> usersApi.deactivateCurrentUser());
+  }
+
+  @Test
+  void manager_get_all_user_ok() throws FirebaseAuthException, ApiException {
+    var manager = someModerator();
+    var token = someToken();
+    userRegistration.registerWithFirebase(manager, token);
+    var administrationApi = new AdministrationApi(anApiClient(token));
+
+    int page = 0;
+    int pageSize = 10;
+    var users = administrationApi.listAllUsers(page, pageSize);
+
+    assertEquals(pageSize, users.getLimit());
+    assertEquals(page, users.getPage());
+    assertFalse(users.getUsers().isEmpty());
+  }
+
+  @Test
+  void user_get_all_user_ko() {
+    var administrationApi = new AdministrationApi(anApiClient(token));
+
+    assertThrowsForbiddenException(() -> administrationApi.listAllUsers(1, 1));
   }
 }

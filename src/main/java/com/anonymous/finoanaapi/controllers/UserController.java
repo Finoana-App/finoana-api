@@ -3,6 +3,7 @@ package com.anonymous.finoanaapi.controllers;
 import static com.anonymous.finoanaapi.utils.security.firebase.FirebaseFilter.getPrincipal;
 
 import com.anonymous.finoanaapi.controllers.mapper.user.RegisterUserMapper;
+import com.anonymous.finoanaapi.controllers.mapper.user.UserListMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserToUserResponseMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserUpdateDtoToUpdateProfileInputMapper;
@@ -16,6 +17,7 @@ import com.anonymous.finoanaapi.services.UserService;
 import jakarta.websocket.server.PathParam;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,7 @@ public class UserController {
   private final RegisterUserMapper registerUserMapper;
   private final RegistrationCurrentUserValidator registrationCurrentUserValidator;
   private final UserRegistrationDtoValidator userRegistrationDtoValidator;
+  private final UserListMapper userListMapper;
 
   @GetMapping("/users/me")
   UserResponse getCurrentUser() {
@@ -71,6 +74,14 @@ public class UserController {
   SuccessResponse deactivateCurrentUser() {
     principalService.disableUser(getPrincipal());
     return getAccountDeactivatedSuccessfullyResponse();
+  }
+
+  @GetMapping("/users")
+  UsersListResponse listAllUsers(
+      @RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+      @RequestParam(value = "limit", defaultValue = "20") Integer pageLimit) {
+    var result = userService.getAll(PageRequest.of(pageNumber, pageLimit));
+    return userListMapper.toRest(result);
   }
 
   public static SuccessResponse getAccountDeactivatedSuccessfullyResponse() {
