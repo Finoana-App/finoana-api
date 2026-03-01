@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: Finoana API
-  version: 1.0.0
+  version: 0.0.1
   description: Finoana - Christian Community Platform API
   contact:
     name: Fiantso Harena
