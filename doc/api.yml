@@ -72,7 +72,7 @@ paths:
                 message: pong
   /health/secured/ping:
     get:
-      summary: Ping Server
+      summary: Secured Ping Server
       description: |
         Simple ping endpoint to verify server connectivity and the authentification filter.
 
