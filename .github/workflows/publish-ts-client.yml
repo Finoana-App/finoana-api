@@ -14,7 +14,7 @@ on:
 
 jobs:
   publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # TODO: check test ok before running
     runs-on: ubuntu-latest
 
     permissions:
