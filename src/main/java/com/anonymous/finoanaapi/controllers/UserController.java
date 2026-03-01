@@ -5,6 +5,7 @@ import static com.anonymous.finoanaapi.utils.security.firebase.FirebaseFilter.ge
 import com.anonymous.finoanaapi.controllers.mapper.user.RegisterUserMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserListMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
+import com.anonymous.finoanaapi.controllers.mapper.user.UserRoleMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserToUserResponseMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserUpdateDtoToUpdateProfileInputMapper;
 import com.anonymous.finoanaapi.controllers.model.*;
@@ -34,6 +35,7 @@ public class UserController {
   private final RegistrationCurrentUserValidator registrationCurrentUserValidator;
   private final UserRegistrationDtoValidator userRegistrationDtoValidator;
   private final UserListMapper userListMapper;
+  private final UserRoleMapper userRoleMapper;
 
   @GetMapping("/users/me")
   UserResponse getCurrentUser() {
@@ -82,6 +84,32 @@ public class UserController {
       @RequestParam(value = "limit", defaultValue = "20") Integer pageLimit) {
     var result = userService.getAll(PageRequest.of(pageNumber, pageLimit));
     return userListMapper.toRest(result);
+  }
+
+  @PostMapping("/users/{id}/ban")
+  SuccessResponse banUser(@PathVariable String id) {
+    userService.inactivateById(id);
+    return getAccountSuccessfullyBaned();
+  }
+
+  @PostMapping("/users/{id}/unban")
+  SuccessResponse unbanUser(@PathVariable String id) {
+    userService.activateById(id);
+    return getAccountSuccessfullyUnbaned();
+  }
+
+  @PutMapping("/users/{id}/role")
+  User updateUserRole(@PathVariable String id, @RequestBody UpdateRoleInput updateRoleInput) {
+    var user = userService.changeRoleById(id, userRoleMapper.toDomain(updateRoleInput.getRole()));
+    return userMapper.toRest(user);
+  }
+
+  private static SuccessResponse getAccountSuccessfullyBaned() {
+    return new SuccessResponse().message("Account successfully baned");
+  }
+
+  private static SuccessResponse getAccountSuccessfullyUnbaned() {
+    return new SuccessResponse().message("Account successfully unbaned");
   }
 
   public static SuccessResponse getAccountDeactivatedSuccessfullyResponse() {

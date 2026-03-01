@@ -28,4 +28,8 @@ public class UserRegistration {
     log.info(registrationLog);
     return register(user);
   }
+
+  public void removeUserById(String id) {
+    userRepository.deleteById(id);
+  }
 }

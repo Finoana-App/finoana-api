@@ -13,6 +13,15 @@ public class UserRoleMapper
     extends AbstractDomaineToRestMapper<
         UserRole, com.anonymous.finoanaapi.controllers.model.UserRole> {
   @Override
+  public UserRole toDomain(com.anonymous.finoanaapi.controllers.model.UserRole rest) {
+    return switch (rest) {
+      case USER -> UserRole.USER;
+      case MODERATOR -> UserRole.MODERATOR;
+      case ADMIN -> UserRole.ADMIN;
+    };
+  }
+
+  @Override
   public com.anonymous.finoanaapi.controllers.model.UserRole toRest(UserRole domain) {
     return switch (domain) {
       case USER -> USER;

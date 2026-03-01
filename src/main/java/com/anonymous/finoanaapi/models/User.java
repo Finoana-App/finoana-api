@@ -2,6 +2,7 @@ package com.anonymous.finoanaapi.models;
 
 import static com.anonymous.finoanaapi.models.enums.UserRole.USER;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVATED;
+import static com.anonymous.finoanaapi.models.enums.UserStatus.DISABLED;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.INACTIVATED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -110,10 +111,27 @@ public class User {
     status = ACTIVATED;
   }
 
-  public void inactiveUser() {
+  public User disableUser() {
+    if (status == DISABLED) {
+      throw new BadRequestException("User status already disabled");
+    }
+    status = DISABLED;
+    return this;
+  }
+
+  public User inactiveUser() {
     if (status == INACTIVATED) {
       throw new BadRequestException("User status already inactivated");
     }
     status = INACTIVATED;
+    return this;
+  }
+
+  public User activeUser() {
+    if (status == ACTIVATED) {
+      throw new BadRequestException("User status already activated");
+    }
+    status = ACTIVATED;
+    return this;
   }
 }

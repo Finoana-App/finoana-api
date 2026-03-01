@@ -52,6 +52,13 @@ public class SecurityConf {
                 .authenticated()
                 .requestMatchers(DELETE, "/users/me")
                 .authenticated()
+                // Permission modification
+                .requestMatchers(POST, "/users/*/ban")
+                .hasRole(MODERATOR.getRole())
+                .requestMatchers(POST, "/users/*/unban")
+                .hasRole(MODERATOR.getRole())
+                .requestMatchers(PUT, "/users/*/role")
+                .hasRole(MODERATOR.getRole())
                 // Basic user manipulation
                 .requestMatchers(GET, "/users")
                 .hasRole(MODERATOR.getRole())

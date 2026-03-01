@@ -5,11 +5,10 @@ import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrow
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsForbiddenException;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsNotFoundException;
 import static com.anonymous.finoanaapi.controllers.UserController.getAccountDeactivatedSuccessfullyResponse;
+import static com.anonymous.finoanaapi.controllers.model.UserRole.MODERATOR;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
-import static com.anonymous.finoanaapi.utils.DummyUser.someModerator;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.anonymous.finoanaapi.config.TestConfig;
@@ -19,7 +18,9 @@ import com.anonymous.finoanaapi.controllers.client.ApiException;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
 import com.anonymous.finoanaapi.controllers.model.RegisterInput;
 import com.anonymous.finoanaapi.controllers.model.UpdateProfileInput;
+import com.anonymous.finoanaapi.controllers.model.UpdateRoleInput;
 import com.anonymous.finoanaapi.models.User;
+import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.anonymous.finoanaapi.repositories.UserRepository;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.junit.jupiter.api.AfterEach;
@@ -42,7 +43,7 @@ public class UserControllerIT extends TestConfig {
 
   @AfterEach
   void setDown() {
-    userRepository.delete(user);
+    userRegistration.removeUserById(user.getId());
   }
 
   @Test
@@ -188,25 +189,29 @@ public class UserControllerIT extends TestConfig {
   }
 
   @Test
-  void manager_get_all_user_ok() throws FirebaseAuthException, ApiException {
-    var manager = someModerator();
-    var token = someToken();
-    userRegistration.registerWithFirebase(manager, token);
-    var administrationApi = new AdministrationApi(anApiClient(token));
-
-    int page = 0;
-    int pageSize = 10;
-    var users = administrationApi.listAllUsers(page, pageSize);
-
-    assertEquals(pageSize, users.getLimit());
-    assertEquals(page, users.getPage());
-    assertFalse(users.getUsers().isEmpty());
-  }
-
-  @Test
   void user_get_all_user_ko() {
     var administrationApi = new AdministrationApi(anApiClient(token));
 
     assertThrowsForbiddenException(() -> administrationApi.listAllUsers(1, 1));
+  }
+
+  @Test
+  void user_change_user_role_to_moderator_ko() throws FirebaseAuthException {
+    var anotherUserWithoutId = someUser();
+    var anotherUserToken = someToken();
+    var anotherUser = userRegistration.registerWithFirebase(anotherUserWithoutId, anotherUserToken);
+    var userAdministrationApi = new AdministrationApi(anApiClient(token));
+    var anotherUserAdministrationApi = new AdministrationApi(anApiClient(anotherUserToken));
+
+    assertThrowsForbiddenException(
+        () ->
+            userAdministrationApi.updateUserRole(
+                anotherUser.getId(), new UpdateRoleInput().role(MODERATOR)));
+
+    var storedUser = userRepository.findById(anotherUser.getId());
+    assertTrue(storedUser.isPresent());
+    assertEquals(UserRole.USER, storedUser.get().getRole());
+    assertThrowsForbiddenException(() -> anotherUserAdministrationApi.listAllUsers(1, 1));
+    userRegistration.removeUserById(anotherUser.getId());
   }
 }

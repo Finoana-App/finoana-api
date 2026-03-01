@@ -20,8 +20,7 @@ public class PrincipalService {
   }
 
   public User disableUser(Principal toDisable) {
-    var user = getUser(toDisable);
-    user.inactiveUser();
+    var user = getUser(toDisable).disableUser();
     return userRepository.save(user);
   }
 }

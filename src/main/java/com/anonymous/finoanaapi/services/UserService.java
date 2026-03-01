@@ -5,6 +5,7 @@ import static com.anonymous.finoanaapi.controllers.model.PrivacyLevelEnum.ANONYM
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.models.dto.UserRegistrationDto;
 import com.anonymous.finoanaapi.models.dto.UserUpdateDto;
+import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.anonymous.finoanaapi.repositories.UserRepository;
 import com.anonymous.finoanaapi.utils.exceptions.NotFoundException;
 import java.util.List;
@@ -49,6 +50,22 @@ public class UserService {
               user.setIsAnonymousByDefault(ANONYMOUS.equals(privacyLevel));
             });
 
+    return save(user);
+  }
+
+  public User inactivateById(String id) {
+    var user = getById(id).inactiveUser();
+    return save(user);
+  }
+
+  public User activateById(String id) {
+    var user = getById(id).activeUser();
+    return save(user);
+  }
+
+  public User changeRoleById(String id, UserRole role) {
+    var user = getById(id);
+    user.setRole(role);
     return save(user);
   }
 
