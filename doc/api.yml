@@ -169,7 +169,7 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
               example:
                 user:
-                  id: 550e8400-e29b-41d4-a716-446655440000
+                  id: 550e8400-e29b-41d4-a716-446655440001
                   email: jean.rakoto@example.com
                   displayName: Jean Rakoto
                   photoUrl: https://storage.finoana.com/users/550e8400.jpg
