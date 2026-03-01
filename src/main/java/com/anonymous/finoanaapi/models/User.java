@@ -1,5 +1,6 @@
 package com.anonymous.finoanaapi.models;
 
+import static com.anonymous.finoanaapi.models.enums.PrivacyLevel.PUBLIC;
 import static com.anonymous.finoanaapi.models.enums.UserRole.USER;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVATED;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.DISABLED;
@@ -11,6 +12,7 @@ import static org.hibernate.type.SqlTypes.NAMED_ENUM;
 
 import com.anonymous.finoanaapi.controllers.exceptions.BadRequestException;
 import com.anonymous.finoanaapi.models.dto.UserRegistrationDto;
+import com.anonymous.finoanaapi.models.enums.PrivacyLevel;
 import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.anonymous.finoanaapi.models.enums.UserStatus;
 import jakarta.persistence.Column;
@@ -94,6 +96,12 @@ public class User {
   @Column(name = "last_login")
   private Instant lastLogin;
 
+  @Builder.Default
+  @Enumerated(STRING)
+  @JdbcTypeCode(NAMED_ENUM)
+  @Column(name = "privacy_level", nullable = false)
+  private PrivacyLevel privacyLevel = PUBLIC;
+
   public static final String FIRST_NAME_COLUMN = "first_name";
   public static final String LAST_NAME_COLUMN = "last_name";
   public static final String FIRST_NAME_ATTRIBUTE = "firstName";
@@ -109,6 +117,7 @@ public class User {
     isAnonymousByDefault = false;
     role = USER;
     status = ACTIVATED;
+    privacyLevel = PUBLIC;
   }
 
   public User disableUser() {

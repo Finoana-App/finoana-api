@@ -1,6 +1,5 @@
 package com.anonymous.finoanaapi.services;
 
-import static com.anonymous.finoanaapi.controllers.model.PrivacyLevelEnum.ANONYMOUS;
 
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.models.dto.UserRegistrationDto;
@@ -43,12 +42,7 @@ public class UserService {
     dto.displayName().ifPresent(user::setDisplayName);
     dto.photoUrl().ifPresent(user::setAvatarUrl);
     dto.bio().ifPresent(user::setBio);
-    dto.privacyLevel()
-        .ifPresent(
-            privacyLevel -> {
-              // TODO: implement privacy level
-              user.setIsAnonymousByDefault(ANONYMOUS.equals(privacyLevel));
-            });
+    dto.privacyLevel().ifPresent(user::setPrivacyLevel);
 
     return save(user);
   }

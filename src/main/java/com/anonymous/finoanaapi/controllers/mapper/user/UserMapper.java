@@ -1,6 +1,5 @@
 package com.anonymous.finoanaapi.controllers.mapper.user;
 
-import static com.anonymous.finoanaapi.controllers.model.PrivacyLevelEnum.PUBLIC;
 
 import com.anonymous.finoanaapi.controllers.mapper.AbstractDomaineToRestMapper;
 import com.anonymous.finoanaapi.models.User;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper
     extends AbstractDomaineToRestMapper<User, com.anonymous.finoanaapi.controllers.model.User> {
   private final UserRoleMapper userRoleMapper;
+  private final UserPrivacyMapper userPrivacyMapper;
 
   @Override
   public com.anonymous.finoanaapi.controllers.model.User toRest(User domain) {
@@ -24,7 +24,7 @@ public class UserMapper
         .isVerified(domain.getEmailVerified())
         .lastSeenAt(domain.getLastLogin())
         .photoUrl(domain.getAvatarUrl())
-        .privacyLevel(PUBLIC)
+        .privacyLevel(userPrivacyMapper.toRest(domain.getPrivacyLevel()))
         .role(userRoleMapper.toRest(domain.getRole()));
   }
 }
