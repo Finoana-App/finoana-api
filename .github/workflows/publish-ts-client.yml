@@ -1,0 +1,42 @@
+name: Publish TypeScript API Client
+
+on:
+  push:
+    paths:
+      - doc/api.yml
+    branches:
+      - dev
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Generate TypeScript client
+        run: ./gradlew openApiGenerateTs
+
+      - name: Publish to GitHub Packages
+        run: |
+          cd build/generated-ts
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,3 +1,5 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.7'
@@ -85,4 +87,20 @@ openApiGenerate {
     generateAliasAsModel = false
     enablePostProcessFile = false
     version = "0.1.0"
+}
+
+tasks.register('openApiGenerateTs', GenerateTask) {
+    generatorName = "typescript-axios"
+
+    inputSpec = "$rootDir/doc/api.yml"
+    outputDir = "$buildDir/generated-ts"
+
+    additionalProperties = [
+            npmName: "@Finoana-App/finoana-api-client",
+            npmVersion: "0.1.0",
+            supportsES6: "true",
+            withSeparateModelsAndApi: "true",
+            apiPackage: "api",
+            modelPackage: "models"
+    ]
 }
