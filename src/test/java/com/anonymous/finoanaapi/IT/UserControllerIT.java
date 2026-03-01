@@ -104,7 +104,6 @@ public class UserControllerIT extends TestConfig {
 
     var usersApi = new UsersApi(anApiClient());
 
-    // TODO: test without token
     var registerInput =
         new RegisterInput()
             .firebaseToken(token)
