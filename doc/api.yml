@@ -94,7 +94,9 @@ paths:
   /users/register:
     post:
       summary: Register New User
-      description: Creates a new user account in the Finoana platform.
+      description: |
+        Creates a new user account in the Finoana platform.
+        Must use a token linked with the current email to register in Finoana platform.
       operationId: registerUser
       tags:
         - Users
@@ -117,12 +119,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
               example:
                 message: User registered successfully
                 user:
@@ -209,14 +206,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
               example:
-                message: Profile updated successfully
                 user:
                   id: 550e8400-e29b-41d4-a716-446655440000
                   email: jean.rakoto@example.com
@@ -293,7 +284,7 @@ paths:
   /users/{id}:
     get:
       summary: Get User by ID
-      description: Retrieves a user's profile by their UUID.
+      description: Retrieves a user's profile by their ID.
       operationId: getUserById
       tags:
         - Users
@@ -325,8 +316,8 @@ paths:
       tags:
         - Administration
       parameters:
-        - $ref: '#/components/parameters/pageNumber'
-        - $ref: '#/components/parameters/pageLimit'
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageLimit'
       responses:
         '200':
           description: List of users retrieved successfully
@@ -377,12 +368,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
               example:
                 message: User role updated successfully
                 user:
@@ -476,7 +462,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           description: Unique user identifier
           example: 550e8400-e29b-41d4-a716-446655440000
 
@@ -495,41 +480,28 @@ components:
 
         photoUrl:
           type: string
-          format: uri
-          nullable: true
           description: URL to user's profile photo
           example: https://storage.finoana.com/users/550e8400.jpg
 
         bio:
           type: string
-          maxLength: 500
-          nullable: true
           description: User's biography or personal description
           example: Follower of Christ, passionate about community and prayer
 
         role:
-          type: string
-          enum: [user, moderator, admin]
-          description: |
-            User's role in the platform:
-            - `user` - Regular community member
-            - `moderator` - Can moderate content and ban users
-            - `admin` - Full administrative access
-          example: user
+          $ref: "#/components/schemas/UserRole"
 
         privacyLevel:
-          type: string
-          enum: [public, private, anonymous]
-          description: |
-            User's privacy settings:
-            - `public` - Profile visible to all users
-            - `private` - Profile visible only to connections
-            - `anonymous` - Profile hidden, only display name shown
-          example: public
+          $ref: "#/components/schemas/PrivacyLevelEnum"
 
         isVerified:
           type: boolean
           description: Whether the user has verified their email address
+          example: true
+
+        isActive:
+          type: boolean
+          description: The current status of user
           example: true
 
         createdAt:
@@ -541,7 +513,6 @@ components:
         lastSeenAt:
           type: string
           format: date-time
-          nullable: true
           description: Last activity timestamp
           example: 2024-01-20T14:45:30Z
     RegisterInput:
@@ -550,6 +521,9 @@ components:
       required:
         - email
         - displayName
+        - firebaseToken
+        - firstName
+        - lastName
       properties:
         email:
           type: string
@@ -566,15 +540,28 @@ components:
 
         photoUrl:
           type: string
-          format: uri
           description: Optional profile photo URL
           example: https://example.com/photo.jpg
 
         bio:
           type: string
-          maxLength: 500
           description: Optional user biography
           example: New member of the Finoana community, excited to connect with fellow believers
+
+        firebaseToken:
+          type: string
+          description: fire base token
+          example: 123dshdhfoqwe7777771398uwoijwod
+
+        firstName:
+          type: string
+          description: user first name
+          example: Jean Pierre
+
+        lastName:
+          type: string
+          description: user last name
+          example: Rakoto
     UpdateProfileInput:
       type: object
       description: User profile update data
@@ -588,21 +575,16 @@ components:
 
         photoUrl:
           type: string
-          format: uri
           description: Updated profile photo URL
           example: https://storage.finoana.com/new-photo.jpg
 
         bio:
           type: string
-          maxLength: 500
           description: Updated biography
           example: Passionate about faith, family, and community service
 
         privacyLevel:
-          type: string
-          enum: [public, private, anonymous]
-          description: Updated privacy level
-          example: private
+          $ref: "#/components/schemas/PrivacyLevelEnum"
     UpdateRoleInput:
       type: object
       description: Role update data (admin only)
@@ -610,10 +592,16 @@ components:
         - role
       properties:
         role:
-          type: string
-          enum: [user, moderator, admin]
-          description: New role to assign to the user
-          example: moderator
+          $ref: "#/components/schemas/UserRole"
+    UserRole:
+      type: string
+      enum: [user, moderator, admin]
+      description: |
+        User's role in the platform:
+        - `user` - Regular community member
+        - `moderator` - Can moderate content and ban users
+        - `admin` - Full administrative access
+      example: user
     SuccessResponse:
       type: object
       description: Generic success response
@@ -662,6 +650,7 @@ components:
 
         total:
           type: integer
+          format: int64
           minimum: 0
           description: Total number of users
           example: 150
@@ -746,18 +735,26 @@ components:
           type: string
           enum: [pong]
           example: pong
+    PrivacyLevelEnum:
+      type: string
+      enum: [public, private, anonymous]
+      description: |
+        User's privacy settings:
+        - `public` - Profile visible to all users
+        - `private` - Profile visible only to connections
+        - `anonymous` - Profile hidden, only display name shown
+      example: public
 
   parameters:
     userId:
       name: id
       in: path
       required: true
-      description: User UUID
+      description: User ID
       schema:
         type: string
-        format: uuid
       example: 550e8400-e29b-41d4-a716-446655440000
-    pageNumber:
+    PageNumber:
       name: page
       in: query
       description: Page number for pagination
@@ -766,7 +763,7 @@ components:
         minimum: 1
         default: 1
       example: 1
-    pageLimit:
+    PageLimit:
       name: limit
       in: query
       description: Number of items per page

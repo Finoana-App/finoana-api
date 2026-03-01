@@ -1,5 +1,11 @@
 package com.anonymous.finoanaapi.utils.security;
 
+import static com.anonymous.finoanaapi.models.enums.UserRole.MODERATOR;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
+
 import com.anonymous.finoanaapi.controllers.exceptions.ForbiddenException;
 import com.anonymous.finoanaapi.utils.security.firebase.FirebaseFilter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +40,35 @@ public class SecurityConf {
     http.authorizeHttpRequests(
         request ->
             request
-                .requestMatchers("/health/ping")
+                // Health check
+                .requestMatchers(GET, "/health/ping")
                 .anonymous()
-                .requestMatchers("/health/secured/ping")
+                .requestMatchers(GET, "/health/secured/ping")
                 .authenticated()
+                // Current user
+                .requestMatchers(GET, "/users/me")
+                .authenticated()
+                .requestMatchers(PUT, "/users/me")
+                .authenticated()
+                .requestMatchers(DELETE, "/users/me")
+                .authenticated()
+                // Permission modification
+                .requestMatchers(POST, "/users/*/ban")
+                .hasRole(MODERATOR.getRole())
+                .requestMatchers(POST, "/users/*/unban")
+                .hasRole(MODERATOR.getRole())
+                .requestMatchers(PUT, "/users/*/role")
+                .hasRole(MODERATOR.getRole())
+                // Basic user manipulation
+                .requestMatchers(GET, "/users")
+                .hasRole(MODERATOR.getRole())
+                .requestMatchers(GET, "/users/search")
+                .authenticated()
+                .requestMatchers(POST, "/users/register")
+                .permitAll()
+                .requestMatchers(GET, "/users/*")
+                .authenticated()
+                // Other
                 .anyRequest()
                 .denyAll());
 

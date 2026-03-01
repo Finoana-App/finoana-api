@@ -26,10 +26,11 @@ class HealthControllerIT extends TestConfig {
   @Test
   void secured_ping_ok() throws Exception {
     var token = "USER";
-    userRegistration.registerWithFirebase(someUser(), token);
+    var user = userRegistration.registerWithFirebase(someUser(), token);
     var api = new HealthApi(anApiClient(token));
 
     var result = api.securedPing();
     assertEquals(PONG, result.getMessage());
+    userRegistration.removeUserById(user.getId());
   }
 }
