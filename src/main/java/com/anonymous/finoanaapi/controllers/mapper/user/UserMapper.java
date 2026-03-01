@@ -1,5 +1,6 @@
 package com.anonymous.finoanaapi.controllers.mapper.user;
 
+import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVATED;
 
 import com.anonymous.finoanaapi.controllers.mapper.AbstractDomaineToRestMapper;
 import com.anonymous.finoanaapi.models.User;
@@ -25,6 +26,7 @@ public class UserMapper
         .lastSeenAt(domain.getLastLogin())
         .photoUrl(domain.getAvatarUrl())
         .privacyLevel(userPrivacyMapper.toRest(domain.getPrivacyLevel()))
-        .role(userRoleMapper.toRest(domain.getRole()));
+        .role(userRoleMapper.toRest(domain.getRole()))
+        .isActive(ACTIVATED.equals(domain.getStatus()));
   }
 }

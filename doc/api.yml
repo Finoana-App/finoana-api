@@ -499,6 +499,11 @@ components:
           description: Whether the user has verified their email address
           example: true
 
+        isActive:
+          type: boolean
+          description: The current status of user
+          example: true
+
         createdAt:
           type: string
           format: date-time
