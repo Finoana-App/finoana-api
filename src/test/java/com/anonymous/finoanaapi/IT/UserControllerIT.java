@@ -4,7 +4,7 @@ import static com.anonymous.finoanaapi.config.FirebaseConfig.setupFirebaseAuthUs
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsBadRequestException;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsForbiddenException;
 import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsNotFoundException;
-import static com.anonymous.finoanaapi.controllers.UserController.getAccountDeactivatedSuccessfullyResponse;
+import static com.anonymous.finoanaapi.controllers.PrincipalController.getAccountDeactivatedSuccessfullyResponse;
 import static com.anonymous.finoanaapi.controllers.model.UserRole.MODERATOR;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
