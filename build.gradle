@@ -98,9 +98,12 @@ tasks.register('openApiGenerateTs', GenerateTask) {
     additionalProperties = [
             npmName: "@Finoana-App/finoana-api-client",
             npmVersion: "0.1.0",
+
             supportsES6: "true",
             withSeparateModelsAndApi: "true",
             apiPackage: "api",
-            modelPackage: "models"
+            modelPackage: "models",
+
+            npmDependencies: "{ \"axios\": \"^1.6.0\" }"
     ]
 }
