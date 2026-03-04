@@ -244,7 +244,7 @@ paths:
         - Users
       parameters:
         - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/QueryName'
       responses:
         '200':
@@ -310,7 +310,7 @@ paths:
         - Administration
       parameters:
         - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/PageSize'
       responses:
         '200':
           description: List of users retrieved successfully
@@ -331,7 +331,7 @@ paths:
                     role: moderator
                     isVerified: true
                 page: 1
-                limit: 20
+                page_size: 20
                 total: 150
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -619,7 +619,7 @@ components:
       required:
         - users
         - page
-        - limit
+        - page_size
         - total
       properties:
         users:
@@ -634,7 +634,7 @@ components:
           description: Current page number
           example: 1
 
-        limit:
+        page_size:
           type: integer
           minimum: 1
           maximum: 100
@@ -756,8 +756,8 @@ components:
         minimum: 1
         default: 1
       example: 1
-    PageLimit:
-      name: limit
+    PageSize:
+      name: page_size
       in: query
       description: Number of items per page
       schema:

@@ -13,7 +13,6 @@ import jakarta.websocket.server.PathParam;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,10 +30,10 @@ public class UserController {
   @GetMapping("/search")
   SearchUsersResponse searchUsers(
       @RequestParam(value = "page", defaultValue = "0") int page,
-      @RequestParam(value = "limit", defaultValue = "20") int limit,
+      @RequestParam(value = "page_size", defaultValue = "20") int pageSize,
       @PathParam("name") String name) {
     var users =
-        userDao.findByCriteria(Criteria.builder().name(name).build(), PageRequest.of(page, limit));
+        userDao.findByCriteria(Criteria.builder().name(name).build(), PageRequest.of(page, pageSize));
     return new SearchUsersResponse()
         .count(users.getSize())
         .users(users.getContent().stream().map(userMapper::toRest).toList());
@@ -53,8 +52,8 @@ public class UserController {
   @GetMapping
   UsersListResponse listAllUsers(
       @RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
-      @RequestParam(value = "limit", defaultValue = "20") Integer pageLimit) {
-    var result = userService.getAll(PageRequest.of(pageNumber, pageLimit));
+      @RequestParam(value = "page_size", defaultValue = "20") Integer pageSize) {
+    var result = userService.getAll(PageRequest.of(pageNumber, pageSize));
     return userListMapper.toRest(result);
   }
 }

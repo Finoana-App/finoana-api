@@ -50,7 +50,7 @@ public class ModeratorControllerIT extends TestConfig {
     int pageSize = 10;
     var users = administrationApi.listAllUsers(page, pageSize);
 
-    assertEquals(pageSize, users.getLimit());
+    assertEquals(pageSize, users.getPageSize());
     assertEquals(page, users.getPage());
     assertFalse(users.getUsers().isEmpty());
   }
@@ -91,7 +91,7 @@ public class ModeratorControllerIT extends TestConfig {
     assertTrue(storedUser.isPresent());
     assertEquals(UserRole.MODERATOR, storedUser.get().getRole());
 
-    assertEquals(pageSize, users.getLimit());
+    assertEquals(pageSize, users.getPageSize());
     assertEquals(page, users.getPage());
     assertFalse(users.getUsers().isEmpty());
     userRegistration.removeUserById(user.getId());

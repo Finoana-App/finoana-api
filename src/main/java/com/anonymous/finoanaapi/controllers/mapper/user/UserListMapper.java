@@ -16,7 +16,7 @@ public class UserListMapper extends AbstractDomaineToRestMapper<Page<User>, User
   public UsersListResponse toRest(Page<User> domain) {
     return new UsersListResponse()
         .users(domain.getContent().stream().map(userMapper::toRest).toList())
-        .limit(domain.getSize())
+        .pageSize(domain.getSize())
         .page(domain.getNumber())
         .total(domain.getTotalElements());
   }
