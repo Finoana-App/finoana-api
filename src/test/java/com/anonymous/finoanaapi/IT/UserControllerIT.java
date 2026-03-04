@@ -91,7 +91,7 @@ public class UserControllerIT extends TestConfig {
     var restUser = userMapper.toRest(domainUser);
     var usersApi = new UsersApi(anApiClient(token));
 
-    var searchUsers = usersApi.searchUsers(0, 10, domainUser.getFirstName());
+    var searchUsers = usersApi.searchUsers(1, 10, domainUser.getFirstName());
 
     assertTrue(searchUsers.getUsers().contains(restUser));
   }
