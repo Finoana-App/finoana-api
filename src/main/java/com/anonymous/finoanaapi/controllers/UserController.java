@@ -29,8 +29,12 @@ public class UserController {
   private final UserListMapper userListMapper;
 
   @GetMapping("/search")
-  SearchUsersResponse searchUsers(@PathParam("limit") int limit, @PathParam("q") String q) {
-    var users = userDao.findByCriteria(Criteria.builder().name(q).build(), Pageable.ofSize(limit));
+  SearchUsersResponse searchUsers(
+      @RequestParam(value = "page", defaultValue = "0") int page,
+      @RequestParam(value = "limit", defaultValue = "20") int limit,
+      @PathParam("name") String name) {
+    var users =
+        userDao.findByCriteria(Criteria.builder().name(name).build(), PageRequest.of(page, limit));
     return new SearchUsersResponse()
         .count(users.getSize())
         .users(users.getContent().stream().map(userMapper::toRest).toList());
