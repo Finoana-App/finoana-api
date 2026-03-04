@@ -46,12 +46,12 @@ public class ModeratorControllerIT extends TestConfig {
   void manager_get_all_user_ok() throws ApiException {
     var administrationApi = new AdministrationApi(anApiClient(token));
 
-    int page = 0;
+    int page = 1;
     int pageSize = 10;
     var users = administrationApi.listAllUsers(page, pageSize);
 
-    assertEquals(pageSize, users.getLimit());
-    assertEquals(page, users.getPage());
+    assertEquals(pageSize, users.getPageSize());
+    assertEquals(page, users.getPage() + 1);
     assertFalse(users.getUsers().isEmpty());
   }
 
@@ -81,8 +81,8 @@ public class ModeratorControllerIT extends TestConfig {
     var user = userRegistration.registerWithFirebase(someUser(), userToken);
     var moderatorAdministrationApi = new AdministrationApi(anApiClient(token));
     var newModeratorAdministrationApi = new AdministrationApi(anApiClient(userToken));
-    int pageSize = 10;
-    int page = 0;
+    var pageSize = 10;
+    var page = 1;
 
     moderatorAdministrationApi.updateUserRole(user.getId(), new UpdateRoleInput().role(MODERATOR));
     var users = newModeratorAdministrationApi.listAllUsers(page, pageSize);
@@ -91,8 +91,8 @@ public class ModeratorControllerIT extends TestConfig {
     assertTrue(storedUser.isPresent());
     assertEquals(UserRole.MODERATOR, storedUser.get().getRole());
 
-    assertEquals(pageSize, users.getLimit());
-    assertEquals(page, users.getPage());
+    assertEquals(pageSize, users.getPageSize());
+    assertEquals(page, users.getPage() + 1);
     assertFalse(users.getUsers().isEmpty());
     userRegistration.removeUserById(user.getId());
   }

@@ -4,6 +4,9 @@ import com.anonymous.finoanaapi.controllers.mapper.user.RegisterUserMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserListMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
 import com.anonymous.finoanaapi.controllers.model.*;
+import com.anonymous.finoanaapi.controllers.models.PageParam;
+import com.anonymous.finoanaapi.controllers.models.PageSizeParam;
+import com.anonymous.finoanaapi.controllers.utils.PageParamsToPageable;
 import com.anonymous.finoanaapi.controllers.validator.RegistrationCurrentUserValidator;
 import com.anonymous.finoanaapi.controllers.validator.UserRegistrationDtoValidator;
 import com.anonymous.finoanaapi.repositories.dao.UserDao;
@@ -12,8 +15,6 @@ import com.anonymous.finoanaapi.services.UserService;
 import jakarta.websocket.server.PathParam;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,10 +28,16 @@ public class UserController {
   private final RegistrationCurrentUserValidator registrationCurrentUserValidator;
   private final UserRegistrationDtoValidator userRegistrationDtoValidator;
   private final UserListMapper userListMapper;
+  private final PageParamsToPageable pageMapper;
 
   @GetMapping("/search")
-  SearchUsersResponse searchUsers(@PathParam("limit") int limit, @PathParam("q") String q) {
-    var users = userDao.findByCriteria(Criteria.builder().name(q).build(), Pageable.ofSize(limit));
+  SearchUsersResponse searchUsers(
+      @RequestParam(value = "page", defaultValue = "1") PageParam page,
+      @RequestParam(value = "page_size", defaultValue = "20") PageSizeParam pageSize,
+      @PathParam("name") String name) {
+    var users =
+        userDao.findByCriteria(
+            Criteria.builder().name(name).build(), pageMapper.apply(page, pageSize));
     return new SearchUsersResponse()
         .count(users.getSize())
         .users(users.getContent().stream().map(userMapper::toRest).toList());
@@ -48,9 +55,9 @@ public class UserController {
 
   @GetMapping
   UsersListResponse listAllUsers(
-      @RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
-      @RequestParam(value = "limit", defaultValue = "20") Integer pageLimit) {
-    var result = userService.getAll(PageRequest.of(pageNumber, pageLimit));
+      @RequestParam(value = "page", defaultValue = "1") PageParam pageNumber,
+      @RequestParam(value = "page_size", defaultValue = "20") PageSizeParam pageSize) {
+    var result = userService.getAll(pageMapper.apply(pageNumber, pageSize));
     return userListMapper.toRest(result);
   }
 }
