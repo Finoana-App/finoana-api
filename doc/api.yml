@@ -243,7 +243,7 @@ paths:
       tags:
         - Users
       parameters:
-        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/QueryName'
         - name: limit
           in: query
           description: Maximum number of results
@@ -773,11 +773,11 @@ components:
         maximum: 100
         default: 20
       example: 20
-    searchQuery:
-      name: q
+    QueryName:
+      name: name
       in: query
-      required: true
-      description: Search query string
+      required: false
+      description: Name parameter
       schema:
         type: string
         minLength: 1
