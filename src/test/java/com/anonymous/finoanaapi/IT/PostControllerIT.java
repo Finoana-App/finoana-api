@@ -1,5 +1,6 @@
 package com.anonymous.finoanaapi.IT;
 
+import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsForbiddenException;
 import static com.anonymous.finoanaapi.controllers.model.PostVisibility.PUBLIC;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
@@ -27,7 +28,7 @@ public class PostControllerIT extends TestConfig {
   }
 
   @Test
-  void user_create_random_post_ok() throws ApiException {
+  void user_create_own_post_ok() throws ApiException {
     var postsApi = new PostsApi(anApiClient(token));
     var toBeCreated =
         new CreatePost()
@@ -40,6 +41,21 @@ public class PostControllerIT extends TestConfig {
 
     assertNotNull(hiPost.getId());
     assertEquals(toBeCreated.getContent(), hiPost.getContent());
+  }
+
+  @Test
+  void user_create_others_post_ko() throws FirebaseAuthException {
+    var otherUser = userRegistration.registerWithFirebase(someUser(), someToken());
+
+    var postsApi = new PostsApi(anApiClient(token));
+    var toBeCreated =
+        new CreatePost()
+            .content("Hi everyone")
+            .anonymous(false)
+            .authorId(otherUser.getId())
+            .visibility(PUBLIC);
+
+    assertThrowsForbiddenException(() -> postsApi.createPost(toBeCreated));
   }
 
   @Test

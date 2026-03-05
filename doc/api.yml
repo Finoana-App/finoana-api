@@ -797,7 +797,6 @@ components:
         - anonymous
       properties:
         authorId:
-          # TODO: must be changed somehow, edge case is the fact that the current user must only create own post
           type: string
           description: ID of the user who created the post
           example: "u123456789"
