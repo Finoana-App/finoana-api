@@ -6,6 +6,7 @@ import static com.anonymous.finoanaapi.models.enums.UserStatus.ACTIVATED;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.DISABLED;
 import static com.anonymous.finoanaapi.models.enums.UserStatus.INACTIVATED;
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.NONE;
 import static org.hibernate.type.SqlTypes.NAMED_ENUM;
@@ -20,8 +21,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -101,6 +104,10 @@ public class User {
   @JdbcTypeCode(NAMED_ENUM)
   @Column(name = "privacy_level", nullable = false)
   private PrivacyLevel privacyLevel = PUBLIC;
+
+  @EqualsAndHashCode.Exclude
+  @OneToMany(fetch = LAZY, mappedBy = "author")
+  private List<Post> posts;
 
   public static final String FIRST_NAME_COLUMN = "first_name";
   public static final String LAST_NAME_COLUMN = "last_name";

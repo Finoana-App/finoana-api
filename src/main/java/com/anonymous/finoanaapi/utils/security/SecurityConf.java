@@ -68,6 +68,11 @@ public class SecurityConf {
                 .permitAll()
                 .requestMatchers(GET, "/users/*")
                 .authenticated()
+                // Post manipulation
+                .requestMatchers(GET, "/users/*/posts")
+                .authenticated()
+                .requestMatchers(POST, "/posts")
+                .authenticated()
                 // Other
                 .anyRequest()
                 .denyAll());

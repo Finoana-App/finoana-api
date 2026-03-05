@@ -42,10 +42,8 @@ public class Post {
   @JoinColumn(name = "author_id", nullable = false, updatable = false)
   private User author;
 
-  @Column(name = "author_display_name")
-  private String authorDisplayName;
-
   @Column(columnDefinition = "TEXT", nullable = false)
+  // TODO: must be sanitised, but depend on the usage one the front
   private String content;
 
   @Builder.Default

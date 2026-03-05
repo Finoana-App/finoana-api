@@ -1,13 +1,16 @@
 package com.anonymous.finoanaapi.controllers;
 
+import com.anonymous.finoanaapi.controllers.mapper.PostToBasePostMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserRoleMapper;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserToUserResponseMapper;
+import com.anonymous.finoanaapi.controllers.model.BasePost;
 import com.anonymous.finoanaapi.controllers.model.SuccessResponse;
 import com.anonymous.finoanaapi.controllers.model.UpdateRoleInput;
 import com.anonymous.finoanaapi.controllers.model.User;
 import com.anonymous.finoanaapi.controllers.model.UserResponse;
 import com.anonymous.finoanaapi.services.UserService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +28,16 @@ public class UserByIdController {
   private final UserToUserResponseMapper userToUserResponseMapper;
   private final UserMapper userMapper;
   private final UserRoleMapper userRoleMapper;
+  private final PostToBasePostMapper postToBasePostMapper;
 
   @GetMapping
   UserResponse getUserById(@PathVariable String id) {
     return userToUserResponseMapper.toRest(userService.getById(id));
+  }
+
+  @GetMapping("/posts")
+  List<BasePost> UserPosts(@PathVariable String id) {
+    return userService.getById(id).getPosts().stream().map(postToBasePostMapper::toRest).toList();
   }
 
   @PostMapping("/ban")
