@@ -274,6 +274,84 @@ paths:
                 error: Search query is required
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /users/{user_id}/follower:
+    get:
+      description: Get user followers
+      operationId: getUserFollowers
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Followers list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersListResponse'
+              example:
+                users:
+                  - id: 550e8400-e29b-41d4-a716-446655440000
+                    displayName: Jean Rakoto
+                    photoUrl: https://storage.finoana.com/users/550e8400.jpg
+                    bio: Follower of Christ
+                  - id: 660e8400-e29b-41d4-a716-446655440001
+                    displayName: Jean Pierre
+                    photoUrl: null
+                    bio: Prayer warrior
+                count: 2
+        '400':
+          description: Missing or invalid search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Search query is required
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /users/{user_id}/following:
+    get:
+      description: Get user followings
+      operationId: getUserFollowings
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: User following list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersListResponse'
+              example:
+                users:
+                  - id: 550e8400-e29b-41d4-a716-446655440000
+                    displayName: Jean Rakoto
+                    photoUrl: https://storage.finoana.com/users/550e8400.jpg
+                    bio: Follower of Christ
+                  - id: 660e8400-e29b-41d4-a716-446655440001
+                    displayName: Jean Pierre
+                    photoUrl: null
+                    bio: Prayer warrior
+                count: 2
+        '400':
+          description: Missing or invalid search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Search query is required
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /users/{user_id}:
     get:
       summary: Get User by ID
