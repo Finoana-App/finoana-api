@@ -337,6 +337,25 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /follows/{user_id}/follow_stats:
+    get:
+      description: Follow global stats
+      operationId: followStats
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: Grouped information about the follow of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFollowInformation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /users/{user_id}/role:
     put:
       summary: Update User Role
@@ -861,6 +880,13 @@ components:
           type: string
           description: Post content
           example: "This is my first post!"
+    UserFollowInformation:
+      type: object
+      properties:
+        followers_count:
+          type: integer
+        following_count:
+          type: integer
 
   parameters:
     userId:
