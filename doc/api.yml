@@ -468,6 +468,39 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /follows/{user_id}:
+    delete:
+      description: Delete the follow relation with the given user from the current authenticated user
+      operationId: deleteFollow
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        200:
+          description: The unfollowed user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      description: Request a follow to the given user from the current authenticated user
+      operationId: addFollow
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        200:
+          description: The requested user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 components:
   securitySchemes:
