@@ -252,7 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchUsersResponse'
+                $ref: '#/components/schemas/UsersListResponse'
               example:
                 users:
                   - id: 550e8400-e29b-41d4-a716-446655440000
@@ -742,23 +742,6 @@ components:
           minimum: 0
           description: Total number of users
           example: 150
-    SearchUsersResponse:
-      type: object
-      description: User search results
-      required:
-        - users
-        - count
-      properties:
-        users:
-          type: array
-          description: Array of matching users
-          items:
-            $ref: '#/components/schemas/User'
-
-        count:
-          type: integer
-          description: Number of results returned
-          example: 5
     Error:
       type: object
       description: Error response
