@@ -5,6 +5,9 @@ plugins {
     id 'org.springframework.boot' version '3.5.7'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.openapi.generator' version '7.12.0'
+
+    // Version calculator
+    id "com.github.gradle-git-version-calculator" version "1.1.0"
 }
 
 sourceSets {
@@ -97,7 +100,7 @@ tasks.register('openApiGenerateTs', GenerateTask) {
 
     additionalProperties = [
             npmName: "@Finoana-App/finoana-api-client",
-            npmVersion: "0.1.0",
+            npmVersion: project.version.toString(),
 
             supportsES6: "true",
             withSeparateModelsAndApi: "true",

@@ -274,7 +274,7 @@ paths:
                 error: Search query is required
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /users/{id}:
+  /users/{user_id}:
     get:
       summary: Get User by ID
       description: Retrieves a user's profile by their ID.
@@ -337,7 +337,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /users/{id}/role:
+  /users/{user_id}/role:
     put:
       summary: Update User Role
       description: Updates a user's role in the system.
@@ -377,7 +377,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /users/{id}/ban:
+  /users/{user_id}/ban:
     post:
       summary: Ban User
       description: Bans a user from the platform.
@@ -401,7 +401,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /users/{id}/unban:
+  /users/{user_id}/unban:
     post:
       summary: Unban User
       description: Removes ban and reactivates a user's account.
@@ -425,6 +425,49 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /posts:
+    post:
+      description: Create a new post
+      tags:
+        - Posts
+      operationId: createPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePost"
+      responses:
+        200:
+          description: Created post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasePost"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /users/{user_id}/posts:
+    get:
+      description: Get posts by user id
+      tags:
+        - Posts
+      operationId: userPosts
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        200:
+          description: Posts made by the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BasePost"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
 components:
   securitySchemes:
@@ -737,10 +780,58 @@ components:
         - `private` - Profile visible only to connections
         - `anonymous` - Profile hidden, only display name shown
       example: public
+    PostVisibility:
+      type: string
+      description: Visibility level of the post
+      enum:
+        - PUBLIC
+        - PRIVATE
+        - FOLLOWERS_ONLY
+      example: PUBLIC
+    CreatePost:
+      type: object
+      required:
+        - authorId
+        - content
+        - visibility
+        - anonymous
+      properties:
+        authorId:
+          type: string
+          description: ID of the user who created the post
+          example: "u123456789"
+
+        content:
+          type: string
+          description: Post content
+          example: "This is my first post!"
+
+        visibility:
+          $ref: '#/components/schemas/PostVisibility'
+
+        anonymous:
+          type: boolean
+          default: false
+          example: false
+    BasePost:
+      type: object
+      required:
+        - id
+        - content
+      properties:
+        id:
+          type: string
+          description: ID of the post
+          example: "u123456789"
+
+        content:
+          type: string
+          description: Post content
+          example: "This is my first post!"
 
   parameters:
     userId:
-      name: id
+      name: user_id
       in: path
       required: true
       description: User ID

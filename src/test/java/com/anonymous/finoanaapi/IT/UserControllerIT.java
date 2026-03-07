@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.anonymous.finoanaapi.config.TestConfig;
 import com.anonymous.finoanaapi.controllers.api.AdministrationApi;
+import com.anonymous.finoanaapi.controllers.api.PostsApi;
 import com.anonymous.finoanaapi.controllers.api.UsersApi;
 import com.anonymous.finoanaapi.controllers.client.ApiException;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
@@ -212,5 +213,12 @@ public class UserControllerIT extends TestConfig {
     assertEquals(UserRole.USER, storedUser.get().getRole());
     assertThrowsForbiddenException(() -> anotherUserAdministrationApi.listAllUsers(1, 1));
     userRegistration.removeUserById(anotherUser.getId());
+  }
+
+  @Test
+  void user_get_new_user_posts_empty() throws ApiException {
+    var postsApi = new PostsApi(anApiClient(token));
+    var posts = postsApi.userPosts(user.getId());
+    assertTrue(posts.isEmpty());
   }
 }
