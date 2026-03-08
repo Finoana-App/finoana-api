@@ -22,4 +22,12 @@ public class UserFollowId implements Serializable {
 
   @Column(name = "following_id", nullable = false)
   private String followingId;
+
+  // TODO: move to a validator
+  public boolean isValid() {
+    if (followerId == null || followingId == null) {
+      return false;
+    }
+    return !followerId.equals(followingId);
+  }
 }

@@ -1,5 +1,7 @@
 package com.anonymous.finoanaapi.IT;
 
+import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsBadRequestException;
+import static com.anonymous.finoanaapi.config.HttpExceptionAssertion.assertThrowsNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.anonymous.finoanaapi.config.TestConfig;
@@ -30,7 +32,6 @@ public class UserFollowControllerIT extends TestConfig {
     usersSetup.shutdown(userRegistration);
   }
 
-  // TODO: self follow test case
   @Test
   void user_follow_another_user_ok() throws ApiException {
     var axelSetup = usersSetup.get(0);
@@ -44,7 +45,13 @@ public class UserFollowControllerIT extends TestConfig {
         new UserFollowId(axelSetup.getUser().getId(), barbaraSetup.getUser().getId()));
   }
 
-  // TODO: unfollow not followed user exception
+  @Test
+  void user_self_follow_ko() {
+    var axelSetup = usersSetup.get(0);
+    var alexUsersApi = new UsersApi(anApiClient(axelSetup.getToken()));
+    assertThrowsBadRequestException(() -> alexUsersApi.addFollow(axelSetup.getUser().getId()));
+  }
+
   @Test
   void user_follow_another_user_then_unfollow_ok() throws ApiException {
     var axelSetup = usersSetup.get(0);
@@ -60,5 +67,13 @@ public class UserFollowControllerIT extends TestConfig {
     assertEquals(followedUser, unfollowedUser);
     userFollowRepository.deleteById(
         new UserFollowId(axelSetup.getUser().getId(), barbaraSetup.getUser().getId()));
+  }
+
+  @Test
+  void user_unfollow_not_followed_user_ko() {
+    var axelSetup = usersSetup.get(0);
+    var barbaraSetup = usersSetup.get(1);
+    var alexUsersApi = new UsersApi(anApiClient(axelSetup.getToken()));
+    assertThrowsNotFoundException(() -> alexUsersApi.deleteFollow(barbaraSetup.getUser().getId()));
   }
 }

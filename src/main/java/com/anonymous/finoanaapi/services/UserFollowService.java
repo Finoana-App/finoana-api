@@ -1,5 +1,6 @@
 package com.anonymous.finoanaapi.services;
 
+import com.anonymous.finoanaapi.controllers.exceptions.BadRequestException;
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.models.follow.UserFollow;
 import com.anonymous.finoanaapi.models.follow.UserFollowId;
@@ -19,6 +20,10 @@ public class UserFollowService {
   }
 
   public UserFollow makeFollow(UserFollowId id) {
+    if (!id.isValid()) {
+      throw new BadRequestException("Self follow not allow");
+    }
+
     var followById = findById(id);
 
     var toSave =
