@@ -1,8 +1,8 @@
 package com.anonymous.finoanaapi.services;
 
-import com.anonymous.finoanaapi.controllers.exceptions.BadRequestException;
 import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.models.follow.UserFollow;
+import com.anonymous.finoanaapi.models.follow.UserFollowIDValidator;
 import com.anonymous.finoanaapi.models.follow.UserFollowId;
 import com.anonymous.finoanaapi.repositories.UserFollowRepository;
 import com.anonymous.finoanaapi.utils.exceptions.FollowInstanceNotFound;
@@ -14,15 +14,14 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class UserFollowService {
   private final UserFollowRepository userFollowRepository;
+  private final UserFollowIDValidator userFollowIDValidator;
 
   public Optional<UserFollow> findById(UserFollowId id) {
     return userFollowRepository.findById(id);
   }
 
   public UserFollow makeFollow(UserFollowId id) {
-    if (!id.isValid()) {
-      throw new BadRequestException("Self follow not allow");
-    }
+    userFollowIDValidator.accept(id);
 
     var followById = findById(id);
 
