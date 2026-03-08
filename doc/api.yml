@@ -415,7 +415,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /follows/{user_id}/follow_stats:
+  /users/{user_id}/follow_stats:
     get:
       description: Follow global stats
       operationId: followStats

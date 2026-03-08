@@ -73,6 +73,9 @@ public class SecurityConf {
                 .authenticated()
                 .requestMatchers(POST, "/posts")
                 .authenticated()
+                // Following requests
+                .requestMatchers(PUT, "/follows/*")
+                .authenticated()
                 // Other
                 .anyRequest()
                 .denyAll());
