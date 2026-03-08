@@ -43,4 +43,22 @@ public class UserFollowControllerIT extends TestConfig {
     userFollowRepository.deleteById(
         new UserFollowId(axelSetup.getUser().getId(), barbaraSetup.getUser().getId()));
   }
+
+  // TODO: unfollow not followed user exception
+  @Test
+  void user_follow_another_user_then_unfollow_ok() throws ApiException {
+    var axelSetup = usersSetup.get(0);
+    var barbaraSetup = usersSetup.get(1);
+    var alexUsersApi = new UsersApi(anApiClient(axelSetup.getToken()));
+
+    var followedUser = alexUsersApi.addFollow(barbaraSetup.getUser().getId());
+
+    assertEquals(userMapper.toRest(barbaraSetup.getUser()), followedUser);
+
+    var unfollowedUser = alexUsersApi.deleteFollow(barbaraSetup.getUser().getId());
+
+    assertEquals(followedUser, unfollowedUser);
+    userFollowRepository.deleteById(
+        new UserFollowId(axelSetup.getUser().getId(), barbaraSetup.getUser().getId()));
+  }
 }
