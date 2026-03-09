@@ -8,33 +8,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.anonymous.finoanaapi.config.TestConfig;
+import com.anonymous.finoanaapi.config.UserSetup;
 import com.anonymous.finoanaapi.controllers.api.PostsApi;
 import com.anonymous.finoanaapi.controllers.client.ApiException;
 import com.anonymous.finoanaapi.controllers.model.CreatePost;
-import com.anonymous.finoanaapi.models.User;
 import com.google.firebase.auth.FirebaseAuthException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PostControllerIT extends TestConfig {
-  private User user;
-  private String token;
+  @Autowired private UserSetup userSetup;
 
   @BeforeEach
   void setUp() throws FirebaseAuthException {
-    user = someUser();
-    token = someToken();
-    userRegistration.registerWithFirebase(user, token);
+    userSetup.setup(userRegistration);
+  }
+
+  @AfterEach
+  void shutdown() {
+    userSetup.shutdown(userRegistration);
   }
 
   @Test
   void user_create_own_post_ok() throws ApiException {
-    var postsApi = new PostsApi(anApiClient(token));
+    var postsApi = new PostsApi(anApiClient(userSetup.getToken()));
     var toBeCreated =
         new CreatePost()
             .content("Hi everyone")
             .anonymous(false)
-            .authorId(user.getId())
+            .authorId(userSetup.getUser().getId())
             .visibility(PUBLIC);
 
     var hiPost = postsApi.createPost(toBeCreated);
@@ -47,7 +51,7 @@ public class PostControllerIT extends TestConfig {
   void user_create_others_post_ko() throws FirebaseAuthException {
     var otherUser = userRegistration.registerWithFirebase(someUser(), someToken());
 
-    var postsApi = new PostsApi(anApiClient(token));
+    var postsApi = new PostsApi(anApiClient(userSetup.getToken()));
     var toBeCreated =
         new CreatePost()
             .content("Hi everyone")
@@ -60,8 +64,8 @@ public class PostControllerIT extends TestConfig {
 
   @Test
   void user_create_random_post_then_other_get_ok() throws ApiException, FirebaseAuthException {
-    var postsApi = new PostsApi(anApiClient(token));
-    var senderId = user.getId();
+    var postsApi = new PostsApi(anApiClient(userSetup.getToken()));
+    var senderId = userSetup.getUser().getId();
     var toBeCreated =
         new CreatePost()
             .content("Hi everyone")
