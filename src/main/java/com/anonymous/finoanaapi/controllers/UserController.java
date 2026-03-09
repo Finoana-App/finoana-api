@@ -31,16 +31,14 @@ public class UserController {
   private final PageParamsToPageable pageMapper;
 
   @GetMapping("/search")
-  SearchUsersResponse searchUsers(
+  UsersListResponse searchUsers(
       @RequestParam(value = "page", defaultValue = "1") PageParam page,
       @RequestParam(value = "page_size", defaultValue = "20") PageSizeParam pageSize,
       @PathParam("name") String name) {
     var users =
         userDao.findByCriteria(
             Criteria.builder().name(name).build(), pageMapper.apply(page, pageSize));
-    return new SearchUsersResponse()
-        .count(users.getSize())
-        .users(users.getContent().stream().map(userMapper::toRest).toList());
+    return userListMapper.toRest(users);
   }
 
   @PostMapping("/register")

@@ -8,7 +8,9 @@ import com.anonymous.finoanaapi.controllers.model.BasePost;
 import com.anonymous.finoanaapi.controllers.model.SuccessResponse;
 import com.anonymous.finoanaapi.controllers.model.UpdateRoleInput;
 import com.anonymous.finoanaapi.controllers.model.User;
+import com.anonymous.finoanaapi.controllers.model.UserFollowInformation;
 import com.anonymous.finoanaapi.controllers.model.UserResponse;
+import com.anonymous.finoanaapi.services.UserFollowService;
 import com.anonymous.finoanaapi.services.UserService;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ public class UserByIdController {
   private final UserMapper userMapper;
   private final UserRoleMapper userRoleMapper;
   private final PostToBasePostMapper postToBasePostMapper;
+  private final UserFollowService userFollowService;
 
   @GetMapping
   UserResponse getUserById(@PathVariable String id) {
@@ -56,6 +59,13 @@ public class UserByIdController {
   User updateUserRole(@PathVariable String id, @RequestBody UpdateRoleInput updateRoleInput) {
     var user = userService.changeRoleById(id, userRoleMapper.toDomain(updateRoleInput.getRole()));
     return userMapper.toRest(user);
+  }
+
+  @GetMapping("/follow_stats")
+  UserFollowInformation followStats(@PathVariable String id) {
+    return new UserFollowInformation()
+        .followersCount(userFollowService.countFollowersOf(id))
+        .followingCount(userFollowService.countFollowingsOf(id));
   }
 
   private static SuccessResponse getAccountSuccessfullyBaned() {

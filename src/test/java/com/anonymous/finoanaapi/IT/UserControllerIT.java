@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.anonymous.finoanaapi.config.TestConfig;
+import com.anonymous.finoanaapi.config.UserSetup;
 import com.anonymous.finoanaapi.controllers.api.AdministrationApi;
 import com.anonymous.finoanaapi.controllers.api.PostsApi;
 import com.anonymous.finoanaapi.controllers.api.UsersApi;
@@ -20,7 +21,6 @@ import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
 import com.anonymous.finoanaapi.controllers.model.RegisterInput;
 import com.anonymous.finoanaapi.controllers.model.UpdateProfileInput;
 import com.anonymous.finoanaapi.controllers.model.UpdateRoleInput;
-import com.anonymous.finoanaapi.models.User;
 import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.anonymous.finoanaapi.repositories.UserRepository;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -31,49 +31,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserControllerIT extends TestConfig {
   @Autowired private UserMapper userMapper;
-  private User user;
-  private String token;
+  @Autowired private UserSetup userSetup;
   @Autowired private UserRepository userRepository;
 
   @BeforeEach
   void setUp() throws FirebaseAuthException {
-    user = someUser();
-    token = someToken();
-    userRegistration.registerWithFirebase(user, token);
+    userSetup.setup(userRegistration);
   }
 
   @AfterEach
-  void setDown() {
-    userRegistration.removeUserById(user.getId());
+  void shutdown() {
+    userSetup.shutdown(userRegistration);
   }
 
   @Test
   void get_current_user_ok() throws ApiException {
-    var usersApi = new UsersApi(anApiClient(token));
+    var usersApi = new UsersApi(anApiClient(userSetup.getToken()));
     var currentUser = usersApi.getCurrentUser();
-    assertEquals(userMapper.toRest(user), currentUser.getUser());
+    assertEquals(userMapper.toRest(userSetup.getUser()), currentUser.getUser());
   }
 
   @Test
   void user_get_own_by_id_ok() throws ApiException {
-    var usersApi = new UsersApi(anApiClient(token));
-    var currentUser = usersApi.getUserById(user.getId());
-    assertEquals(userMapper.toRest(user), currentUser.getUser());
+    var usersApi = new UsersApi(anApiClient(userSetup.getToken()));
+    var currentUser = usersApi.getUserById(userSetup.getUser().getId());
+    assertEquals(userMapper.toRest(userSetup.getUser()), currentUser.getUser());
   }
 
   @Test
   void get_not_existing_user_by_id_ko() {
-    var usersApi = new UsersApi(anApiClient(token));
+    var usersApi = new UsersApi(anApiClient(userSetup.getToken()));
     assertThrowsNotFoundException(() -> usersApi.getUserById("user-that-doesn't-exist*-id"));
   }
 
   @Test
   void user_update_own_info_ok() throws ApiException {
     var newBio = "hello";
-    var usersApi = new UsersApi(anApiClient(token));
+    var usersApi = new UsersApi(anApiClient(userSetup.getToken()));
     var actualUserInfo = usersApi.updateCurrentUser(new UpdateProfileInput().bio(newBio));
 
-    var previousUserInfo = userMapper.toRest(user);
+    var previousUserInfo = userMapper.toRest(userSetup.getUser());
     assertEquals(previousUserInfo.getId(), actualUserInfo.getId());
     assertEquals(previousUserInfo.getEmail(), actualUserInfo.getEmail());
     assertEquals(newBio, actualUserInfo.getBio());
@@ -90,7 +87,7 @@ public class UserControllerIT extends TestConfig {
   void filer_user_by_criteria_ok() throws ApiException {
     var domainUser = userRepository.save(someUser());
     var restUser = userMapper.toRest(domainUser);
-    var usersApi = new UsersApi(anApiClient(token));
+    var usersApi = new UsersApi(anApiClient(userSetup.getToken()));
 
     var searchUsers = usersApi.searchUsers(1, 10, domainUser.getFirstName());
 
@@ -126,7 +123,7 @@ public class UserControllerIT extends TestConfig {
   }
 
   @Test
-  void user_login_process_without_information_ko() throws FirebaseAuthException, ApiException {
+  void user_login_process_without_information_ko() throws FirebaseAuthException {
     var token = someToken();
     var user = someUser();
     setupFirebaseAuthUser(token, user.getEmail(), user.getFirstName(), user.getAvatarUrl());
@@ -174,23 +171,23 @@ public class UserControllerIT extends TestConfig {
 
   @Test
   void inactivate_current_user_ok() throws ApiException {
-    var usersApi = new UsersApi(anApiClient(token));
+    var usersApi = new UsersApi(anApiClient(userSetup.getToken()));
     var successResponse = usersApi.deactivateCurrentUser();
     assertEquals(getAccountDeactivatedSuccessfullyResponse(), successResponse);
   }
 
   @Test
   void inactivate_current_user_twice_not_ko() throws ApiException {
-    var usersApi = new UsersApi(anApiClient(token));
+    var usersApi = new UsersApi(anApiClient(userSetup.getToken()));
     var successResponse = usersApi.deactivateCurrentUser();
     assertEquals(getAccountDeactivatedSuccessfullyResponse(), successResponse);
 
-    assertThrowsBadRequestException(() -> usersApi.deactivateCurrentUser());
+    assertThrowsBadRequestException(usersApi::deactivateCurrentUser);
   }
 
   @Test
   void user_get_all_user_ko() {
-    var administrationApi = new AdministrationApi(anApiClient(token));
+    var administrationApi = new AdministrationApi(anApiClient(userSetup.getToken()));
 
     assertThrowsForbiddenException(() -> administrationApi.listAllUsers(1, 1));
   }
@@ -200,7 +197,7 @@ public class UserControllerIT extends TestConfig {
     var anotherUserWithoutId = someUser();
     var anotherUserToken = someToken();
     var anotherUser = userRegistration.registerWithFirebase(anotherUserWithoutId, anotherUserToken);
-    var userAdministrationApi = new AdministrationApi(anApiClient(token));
+    var userAdministrationApi = new AdministrationApi(anApiClient(userSetup.getToken()));
     var anotherUserAdministrationApi = new AdministrationApi(anApiClient(anotherUserToken));
 
     assertThrowsForbiddenException(
@@ -217,8 +214,8 @@ public class UserControllerIT extends TestConfig {
 
   @Test
   void user_get_new_user_posts_empty() throws ApiException {
-    var postsApi = new PostsApi(anApiClient(token));
-    var posts = postsApi.userPosts(user.getId());
+    var postsApi = new PostsApi(anApiClient(userSetup.getToken()));
+    var posts = postsApi.userPosts(userSetup.getUser().getId());
     assertTrue(posts.isEmpty());
   }
 }
