@@ -1,9 +1,11 @@
 package com.anonymous.finoanaapi.config;
 
+import static com.anonymous.finoanaapi.models.enums.UserRole.USER;
 import static com.anonymous.finoanaapi.utils.DummyToken.someToken;
 import static com.anonymous.finoanaapi.utils.DummyUser.someUser;
 
 import com.anonymous.finoanaapi.models.User;
+import com.anonymous.finoanaapi.models.enums.UserRole;
 import com.google.firebase.auth.FirebaseAuthException;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,8 +18,12 @@ public class UserSetup {
   private String token;
 
   public void setup(UserRegistration userRegistration) throws FirebaseAuthException {
+    setup(userRegistration, USER);
+  }
+
+  public void setup(UserRegistration userRegistration, UserRole role) throws FirebaseAuthException {
     token = someToken();
-    user = userRegistration.registerWithFirebase(someUser(), token);
+    user = userRegistration.registerWithFirebase(someUser(role), token);
   }
 
   public void shutdown(UserRegistration userRegistration) {
