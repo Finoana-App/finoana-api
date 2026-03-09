@@ -43,4 +43,13 @@ public class UserFollowService {
     follow.setIsFollowing(false);
     return userFollowRepository.save(follow);
   }
+
+  // TODO: make that single request when performance will mattered
+  public int countFollowersOf(String userId) {
+    return userFollowRepository.countByFollowingId(userId);
+  }
+
+  public int countFollowingsOf(String userId) {
+    return userFollowRepository.countByFollowerId(userId);
+  }
 }

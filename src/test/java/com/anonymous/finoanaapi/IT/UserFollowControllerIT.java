@@ -9,6 +9,7 @@ import com.anonymous.finoanaapi.config.UserListSetup;
 import com.anonymous.finoanaapi.controllers.api.UsersApi;
 import com.anonymous.finoanaapi.controllers.client.ApiException;
 import com.anonymous.finoanaapi.controllers.mapper.user.UserMapper;
+import com.anonymous.finoanaapi.controllers.model.UserFollowInformation;
 import com.anonymous.finoanaapi.models.follow.UserFollowId;
 import com.anonymous.finoanaapi.repositories.UserFollowRepository;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -75,5 +76,34 @@ public class UserFollowControllerIT extends TestConfig {
     var barbaraSetup = usersSetup.get(1);
     var alexUsersApi = new UsersApi(anApiClient(axelSetup.getToken()));
     assertThrowsNotFoundException(() -> alexUsersApi.deleteFollow(barbaraSetup.getUser().getId()));
+  }
+
+  @Test
+  void user_follow_count_ok() throws ApiException {
+    var axelSetup = usersSetup.get(0);
+    var barbaraSetup = usersSetup.get(1);
+    var axelUsersApi = new UsersApi(anApiClient(axelSetup.getToken()));
+    var barbaraUsersApi = new UsersApi(anApiClient(barbaraSetup.getToken()));
+
+    var axelStats = axelUsersApi.followStats(axelSetup.getUser().getId());
+    var barbaraStats = barbaraUsersApi.followStats(barbaraSetup.getUser().getId());
+
+    assertEquals(emptyStats(), axelStats);
+    assertEquals(emptyStats(), barbaraStats);
+
+    axelUsersApi.addFollow(barbaraSetup.getUser().getId());
+
+    var axelStatsAfterFollow = axelUsersApi.followStats(axelSetup.getUser().getId());
+    var barbaraStatsAfterFollow = barbaraUsersApi.followStats(barbaraSetup.getUser().getId());
+
+    assertEquals(emptyStats().followersCount(1), barbaraStatsAfterFollow);
+    assertEquals(emptyStats().followingCount(1), axelStatsAfterFollow);
+
+    userFollowRepository.deleteById(
+        new UserFollowId(axelSetup.getUser().getId(), barbaraSetup.getUser().getId()));
+  }
+
+  private static UserFollowInformation emptyStats() {
+    return new UserFollowInformation().followersCount(0).followingCount(0);
   }
 }

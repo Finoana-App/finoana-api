@@ -59,6 +59,13 @@ public class SecurityConf {
                 .hasRole(MODERATOR.getRole())
                 .requestMatchers(PUT, "/users/*/role")
                 .hasRole(MODERATOR.getRole())
+                // Following requests
+                .requestMatchers(PUT, "/follows/*")
+                .authenticated()
+                .requestMatchers(DELETE, "/follows/*")
+                .authenticated()
+                .requestMatchers(GET, "/users/*/follow_stats")
+                .authenticated()
                 // Basic user manipulation
                 .requestMatchers(GET, "/users")
                 .hasRole(MODERATOR.getRole())
@@ -72,11 +79,6 @@ public class SecurityConf {
                 .requestMatchers(GET, "/users/*/posts")
                 .authenticated()
                 .requestMatchers(POST, "/posts")
-                .authenticated()
-                // Following requests
-                .requestMatchers(PUT, "/follows/*")
-                .authenticated()
-                .requestMatchers(DELETE, "/follows/*")
                 .authenticated()
                 // Other
                 .anyRequest()
