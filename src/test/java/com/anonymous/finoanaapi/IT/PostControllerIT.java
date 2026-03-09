@@ -12,6 +12,7 @@ import com.anonymous.finoanaapi.config.UserSetup;
 import com.anonymous.finoanaapi.controllers.api.PostsApi;
 import com.anonymous.finoanaapi.controllers.client.ApiException;
 import com.anonymous.finoanaapi.controllers.model.CreatePost;
+import com.anonymous.finoanaapi.repositories.PostRepository;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class PostControllerIT extends TestConfig {
   @Autowired private UserSetup userSetup;
+  @Autowired private PostRepository postRepository;
 
   @BeforeEach
   void setUp() throws FirebaseAuthException {
@@ -45,6 +47,7 @@ public class PostControllerIT extends TestConfig {
 
     assertNotNull(hiPost.getId());
     assertEquals(toBeCreated.getContent(), hiPost.getContent());
+    postRepository.deleteById(hiPost.getId());
   }
 
   @Test
@@ -88,5 +91,6 @@ public class PostControllerIT extends TestConfig {
     var post = posts.getFirst();
     assertNotNull(post);
     assertEquals(toBeCreated.getContent(), post.getContent());
+    postRepository.deleteById(hiPost.getId());
   }
 }
