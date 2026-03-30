@@ -28,7 +28,7 @@ paths:
     get:
       summary: Check API Health
       description: |
-        Returns the current health status of the API.
+        Returns the current health status of the API
 
         Use this endpoint to:
         - Monitor API availability
