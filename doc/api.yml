@@ -47,7 +47,7 @@ paths:
                 $ref: '#/components/schemas/HealthResponse'
               example:
                 status: ok
-                timestamp: 2024-01-20T15:30:00Z
+                timestamp: 2024-01-20T15:30:01Z
                 uptime: 86400.5
                 version: 1.0.0
   /health/ping:

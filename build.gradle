@@ -7,7 +7,7 @@ plugins {
     id 'org.openapi.generator' version '7.12.0'
 
     // Automatic semantic version from git commits
-    id "net.vivin.gradle-semantic-build-versioning" version "4.0.0"
+    id 'com.palantir.git-version' version '3.1.0'
 }
 
 sourceSets {
@@ -18,6 +18,7 @@ sourceSets {
 
 group = 'com.anonymous'
 description = 'finoana-api'
+version = gitVersion()
 
 java {
     group = 'com.anonymous.finoanaapi'
@@ -61,12 +62,6 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-semanticBuildVersioning {
-    majorPattern = ".*BREAKING CHANGE.*"
-    minorPattern = ".*feat.*"
-    patchPattern = ".*fix.*"
 }
 
 openApiGenerate {
@@ -114,4 +109,8 @@ tasks.register('openApiGenerateTs', GenerateTask) {
 
             npmDependencies: "{ \"axios\": \"^1.6.0\" }"
     ]
+}
+
+tasks.register('getVersion') {
+    logger.info('version = ' + project.version);
 }
